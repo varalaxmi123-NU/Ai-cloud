@@ -199,7 +199,7 @@ export const AlertCorrelationView: React.FC<AlertCorrelationViewProps> = ({
             </div>
             <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
               Instead of spamming on-call SREs with {selectedIncident.rawAlertsCount} individual PagerDuty pings,
-              ApexSRE collapsed them into a single coherent incident envelope, saving an estimated 24 engineer minutes.
+              CloudLog Correlation Engine collapsed them into a single coherent incident envelope, saving an estimated 24 engineer minutes.
             </p>
           </div>
 

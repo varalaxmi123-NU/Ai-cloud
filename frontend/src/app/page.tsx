@@ -28,16 +28,10 @@ export default function CloudLogObservabilityApp() {
   const [loading, setLoading] = useState<boolean>(false);
   const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
 
-  // Check saved session on mount
+  // Default view starts on Welcome landing page as requested
+  // Session storage tracks auth state for the current session
   useEffect(() => {
-    try {
-      const savedAuth = sessionStorage.getItem("cloudlog_authenticated");
-      if (savedAuth === "true") {
-        setCurrentView("dashboard");
-      }
-    } catch {
-      // ignore
-    }
+    // Keep initial view as 'welcome' so user experiences the clean landing flow
   }, []);
 
   const handleSignInSuccess = () => {
@@ -210,6 +204,8 @@ export default function CloudLogObservabilityApp() {
       {/* Top Header Navbar */}
       <Navbar
         topology={topology}
+        activeTab={activeTab}
+        onSelectTab={(tab) => setActiveTab(tab)}
         onReset={handleReset}
         audioEnabled={audioEnabled}
         onToggleAudio={() => setAudioEnabled(!audioEnabled)}
@@ -218,12 +214,9 @@ export default function CloudLogObservabilityApp() {
 
       {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-        {/* Executive Welcome Hero & Segmented Tab Switcher */}
+        {/* Executive KPI Stat Strip */}
         <WelcomeHeader
-          activeTab={activeTab}
-          onSelectTab={(tab) => setActiveTab(tab)}
           noiseReductionPct={91.2}
-          rawAlertsCount={142}
         />
 
         {/* Feature 1: Real-Time Log Monitoring & Statistical Anomaly Stream */}
@@ -326,7 +319,7 @@ export default function CloudLogObservabilityApp() {
       <footer className="border-t border-slate-800 bg-[#080d1a] py-4 px-6 text-center text-xs text-slate-400 font-mono flex flex-wrap items-center justify-between gap-3 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-slate-200 font-semibold">CloudLog AI — Enterprise Cloud Observability</span>
+          <span className="text-slate-200 font-semibold">CloudLog Enterprise — Systems Observability</span>
         </div>
         <div className="flex items-center gap-4 text-slate-400">
           <span>Logged in as: <b className="text-cyan-300">company@gmail.com</b></span>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CloudLog AI — Autonomous Log Analyzer & SRE Cascade Predictor",
+  title: "CloudLog Enterprise — Cloud Log Analyzer & Systems Observability",
   description: "Enterprise cloud observability platform with real-time log anomaly detection, natural-language search, alert correlation, and deployment regression prevention.",
 };
 

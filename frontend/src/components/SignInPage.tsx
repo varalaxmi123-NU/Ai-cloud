@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   KeyRound
 } from "lucide-react";
+import { EnterpriseLogo } from "@/components/EnterpriseLogo";
 
 interface SignInPageProps {
   onSuccess: () => void;
@@ -70,12 +71,12 @@ export const SignInPage: React.FC<SignInPageProps> = ({
       {/* Sign In Card */}
       <div className="relative z-10 w-full max-w-md p-8 rounded-3xl bg-[#111827] border border-slate-700/80 shadow-2xl space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white shadow-lg shadow-cyan-500/20 mx-auto">
-            <Lock className="w-6 h-6" />
+        <div className="text-center space-y-3">
+          <div className="flex justify-center">
+            <EnterpriseLogo size={42} showText={false} />
           </div>
           <h2 className="text-2xl font-black text-white tracking-tight">
-            Sign In to CloudLog AI
+            Sign In to CloudLog Enterprise
           </h2>
           <p className="text-xs text-slate-300">
             Enter your enterprise credentials to access the command center.
