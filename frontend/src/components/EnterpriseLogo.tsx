@@ -5,20 +5,22 @@ import React from "react";
 interface LogoProps {
   size?: number;
   showText?: boolean;
+  showSubtitle?: boolean;
   className?: string;
 }
 
 export const EnterpriseLogo: React.FC<LogoProps> = ({
-  size = 34,
+  size = 32,
   showText = true,
+  showSubtitle = false,
   className = "",
 }) => {
   return (
-    <div className={`flex items-center gap-3 select-none ${className}`}>
-      {/* Precision Geometric Isometric Infrastructure Prism - Pure Enterprise SaaS */}
+    <div className={`flex items-center gap-2.5 select-none ${className}`}>
+      {/* Precision Geometric Isometric Infrastructure Prism */}
       <div
-        className="relative shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 p-1.5 border border-slate-700/80 shadow-md shadow-black/40"
-        style={{ width: size + 8, height: size + 8 }}
+        className="relative shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-b from-[#131d31] to-[#0c1322] p-1.5 border border-sky-500/25 shadow-sm shadow-sky-500/10 hover:border-sky-400/40 transition-colors"
+        style={{ width: size + 6, height: size + 6 }}
       >
         <svg
           width={size}
@@ -49,7 +51,6 @@ export const EnterpriseLogo: React.FC<LogoProps> = ({
           </defs>
 
           {/* Isometric Cube Geometry */}
-          {/* Top Diamond Facet */}
           <path
             d="M18 3L32 11L18 19L4 11Z"
             fill="url(#facet-top)"
@@ -58,7 +59,6 @@ export const EnterpriseLogo: React.FC<LogoProps> = ({
             strokeLinejoin="round"
           />
 
-          {/* Left Vertical Facet */}
           <path
             d="M4 11L18 19V33L4 25Z"
             fill="url(#facet-left)"
@@ -67,7 +67,6 @@ export const EnterpriseLogo: React.FC<LogoProps> = ({
             strokeLinejoin="round"
           />
 
-          {/* Right Vertical Facet */}
           <path
             d="M18 19L32 11V25L18 33Z"
             fill="url(#facet-right)"
@@ -76,7 +75,7 @@ export const EnterpriseLogo: React.FC<LogoProps> = ({
             strokeLinejoin="round"
           />
 
-          {/* Precision Center Node Grid */}
+          {/* Center Core Node */}
           <path
             d="M18 9L26 13.5L18 18L10 13.5Z"
             fill="#ffffff"
@@ -93,13 +92,15 @@ export const EnterpriseLogo: React.FC<LogoProps> = ({
             <span className="font-extrabold text-white text-base sm:text-lg tracking-tight leading-none">
               Cloud<span className="text-sky-400">Log</span>
             </span>
-            <span className="px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold tracking-widest text-slate-300 bg-slate-800 border border-slate-700/80 rounded">
+            <span className="px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold tracking-wider text-sky-300 bg-sky-950/70 border border-sky-500/30 rounded-md">
               ENTERPRISE
             </span>
           </div>
-          <span className="text-[9px] sm:text-[10px] text-slate-400 tracking-wider font-semibold uppercase mt-0.5 hidden sm:block">
-            Distributed Systems Observability
-          </span>
+          {showSubtitle && (
+            <span className="text-[9px] sm:text-[10px] text-slate-400 tracking-wider font-semibold uppercase mt-0.5">
+              Observability &amp; Resilience
+            </span>
+          )}
         </div>
       )}
     </div>

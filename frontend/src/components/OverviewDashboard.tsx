@@ -612,24 +612,12 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                       <circle
                         cx={c.cx}
                         cy={c.cyErr}
-                        r={isHovered ? 6.5 : isSpike ? 5 : 3.5}
+                        r={isHovered ? 6 : isSpike ? 4.5 : 3.5}
                         fill={isSpike ? "#f43f5e" : "#0ea5e9"}
                         stroke="#0f172a"
                         strokeWidth="2"
                         className="transition-all"
                       />
-                      {isSpike && (
-                        <circle
-                          cx={c.cx}
-                          cy={c.cyErr}
-                          r="9"
-                          fill="none"
-                          stroke="#f43f5e"
-                          strokeWidth="1.5"
-                          opacity="0.5"
-                          className="animate-ping"
-                        />
-                      )}
                     </g>
                   );
                 })}

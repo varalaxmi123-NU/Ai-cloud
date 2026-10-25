@@ -42,26 +42,13 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <EnterpriseLogo size={36} />
 
-          <div className="flex items-center gap-4">
-            {/* System Status Pill */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0f172a] border border-slate-800 text-xs text-slate-300">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>Sample Demo Scenario (8 Services)</span>
-            </div>
-
-            {/* Quick Demo Credentials Pill */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 font-mono text-xs text-slate-400">
-              <KeyRound className="w-3.5 h-3.5 text-sky-400" />
-              <span>company@gmail.com</span>
-            </div>
-
-            {/* Sign In CTA */}
+          <div className="flex items-center gap-3">
+            {/* Direct Sign In CTA */}
             <button
               onClick={() => onGetStarted("dashboard")}
-              className="text-xs font-bold px-4 py-2 rounded-xl text-white bg-sky-600 hover:bg-sky-500 transition-all cursor-pointer shadow-md shadow-sky-600/30 flex items-center gap-1.5"
+              className="text-xs font-bold px-4 py-2 rounded-xl text-white bg-sky-600 hover:bg-sky-500 transition-all cursor-pointer shadow-md shadow-sky-600/30"
             >
-              <span>Sign In</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Sign In
             </button>
           </div>
         </div>
@@ -421,8 +408,8 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
 
       {/* Footer */}
       <footer className="relative z-10 w-full border-t border-slate-800/80 bg-[#070b14] py-6 px-6 mt-16 text-center text-xs text-slate-500 flex flex-wrap items-center justify-between max-w-7xl mx-auto">
-        <span>&copy; 2026 CloudLog Systems, Inc. Enterprise Infrastructure.</span>
-        <span className="font-mono">Ready for Vercel Serverless Deployment</span>
+        <span>&copy; 2026 CloudLog Systems, Inc. All rights reserved.</span>
+        <span className="font-mono text-slate-400">Enterprise Cloud Observability &amp; SRE Resilience</span>
       </footer>
     </div>
   );

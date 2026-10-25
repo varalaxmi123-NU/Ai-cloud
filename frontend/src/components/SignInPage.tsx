@@ -172,10 +172,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({
                 <span>Access Granted</span>
               </span>
             ) : (
-              <>
-                <span>Sign In to Dashboard</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
+              <span>Sign In to Dashboard</span>
             )}
           </button>
         </form>
