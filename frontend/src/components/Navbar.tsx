@@ -14,7 +14,6 @@ import {
   Volume2,
   VolumeX,
   LogOut,
-  Radio,
   CheckCircle2,
   AlertTriangle,
   Flame,
@@ -45,18 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleAudio,
   onSignOut,
 }) => {
-  const [timeStr, setTimeStr] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setTimeStr(now.toLocaleTimeString("en-US", { hour12: false }));
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const systemStatus = topology?.system_status || "HEALTHY";
   const isCritical = systemStatus === "CRITICAL_CASCADE_RISK";
@@ -130,12 +118,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-[10px] text-slate-400 font-mono hidden xl:inline">• 8 Pods</span>
               </div>
             )}
-          </div>
-
-          {/* UTC Clock (Desktop only) */}
-          <div className="hidden lg:flex items-center gap-1.5 text-xs font-mono text-slate-300 bg-[#141d2e] px-2.5 py-1 rounded-lg border border-slate-800">
-            <Radio className="w-3 h-3 text-sky-400" />
-            <span>{timeStr}</span>
           </div>
 
           {/* Audio Alert Toggle */}
@@ -212,7 +194,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="md:hidden px-4 py-3 bg-[#0c1220] border-t border-slate-800 space-y-2 animate-fadeIn">
           <div className="pb-2 border-b border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
             <span>Cluster Status: <b className="text-emerald-400">Healthy (8 Pods)</b></span>
-            <span>UTC: {timeStr}</span>
+            <span>Telemetry: <b className="text-sky-400">Live (3s)</b></span>
           </div>
 
           <div className="space-y-1 pt-1">
