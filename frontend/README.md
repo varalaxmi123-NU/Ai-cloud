@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CloudLog Enterprise — Frontend Application
 
-## Getting Started
+Next.js 16 (App Router), TypeScript, and Tailwind CSS client application for CloudLog Enterprise.
 
-First, run the development server:
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev -- -p 3000
+
+# Build production bundle
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Vercel Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Deploy this folder directly to Vercel:
+```bash
+npx vercel
+```
+Or import the repository in [Vercel Dashboard](https://vercel.com/new) and set the Root Directory to `frontend`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features
+- **Failure Chain Detective**: Interactive causal failure chain with clickable log proof.
+- **Observability Dashboard**: 3-section layout with dynamic time-series charts, severity distribution, and service health overview.
+- **Universal Log Analyzer**: Ingest `.log`, `.txt`, `.json`, `.csv` files client-side with zero data leakage.
+- **AI Incident Investigator**: Evidence-based root-cause synthesis with actionable runbooks.
+- **Failure Replay Engine**: Multi-hop outage cascade player.
+- **Deployment Regression**: Canary release comparison and safe rollback recommendations.

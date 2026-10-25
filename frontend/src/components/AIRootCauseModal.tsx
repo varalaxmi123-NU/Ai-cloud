@@ -26,7 +26,6 @@ export const AIRootCauseModal: React.FC<AIRootCauseModalProps> = ({
   log,
   onClose,
 }) => {
-  const [engineMode, setEngineMode] = useState<"llm" | "rules">("llm");
   const [copied, setCopied] = useState<boolean>(false);
 
   if (!log) return null;
@@ -43,16 +42,16 @@ export const AIRootCauseModal: React.FC<AIRootCauseModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
       <div className="relative w-full max-w-3xl rounded-2xl border border-indigo-500/40 bg-[#070b16] shadow-2xl shadow-indigo-950/60 overflow-hidden max-h-[92vh] flex flex-col">
         {/* Modal Top Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-[#090e1f] flex items-center justify-between">
+        <div className="px-5 sm:px-6 py-4 border-b border-slate-800 bg-[#090e1f] flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500/30 to-purple-600/30 text-indigo-300 border border-indigo-500/50">
-              <BrainCircuit className="w-5 h-5 animate-pulse" />
+            <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500/30 to-purple-600/30 text-indigo-300 border border-indigo-500/50 shrink-0">
+              <BrainCircuit className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-white flex flex-wrap items-center gap-2">
                 <span>AI-Powered Root-Cause Assistant</span>
-                <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-mono border border-indigo-500/40 font-semibold">
-                  {analysis.confidenceScore}% Confidence
+                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-mono border border-indigo-500/40 font-semibold">
+                  {analysis.confidenceScore}% Evidence Match
                 </span>
               </h3>
               <p className="text-xs text-slate-400 font-mono">
@@ -61,34 +60,16 @@ export const AIRootCauseModal: React.FC<AIRootCauseModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Fallback Engine Mode Switcher */}
-            <div className="flex items-center bg-slate-900 rounded-lg p-0.5 border border-slate-800 text-[10px] font-mono">
-              <button
-                onClick={() => setEngineMode("llm")}
-                className={`px-2 py-1 rounded transition-colors ${
-                  engineMode === "llm"
-                    ? "bg-indigo-600 text-white font-bold"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                LLM SRE Engine
-              </button>
-              <button
-                onClick={() => setEngineMode("rules")}
-                className={`px-2 py-1 rounded transition-colors ${
-                  engineMode === "rules"
-                    ? "bg-indigo-600 text-white font-bold"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                Rule-Based Fallback
-              </button>
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Unified Hybrid SRE AI Badge */}
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-950/70 border border-indigo-500/40 text-[11px] font-mono text-indigo-300 font-medium">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Hybrid SRE AI</span>
             </div>
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -96,7 +77,7 @@ export const AIRootCauseModal: React.FC<AIRootCauseModalProps> = ({
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-5 text-xs text-slate-300">
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-5 text-xs text-slate-300">
           {/* Raw Error Banner */}
           <div className="p-3.5 rounded-xl bg-red-950/30 border border-red-500/40 text-red-300 font-mono space-y-1">
             <div className="flex justify-between text-[10px] text-red-400 font-bold uppercase">
@@ -113,7 +94,7 @@ export const AIRootCauseModal: React.FC<AIRootCauseModalProps> = ({
           <div className="p-4 rounded-xl bg-slate-900/80 border border-indigo-500/30 space-y-2">
             <div className="flex items-center gap-2 text-indigo-400 font-bold text-[11px] uppercase tracking-wider font-mono">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Root Cause Diagnosis ({engineMode === "llm" ? "Claude / GPT-4 SRE Model" : "Deterministic Rule Engine"})</span>
+              <span>Root Cause Diagnosis (Hybrid LLM Synthesis &amp; Pattern Matching)</span>
             </div>
             <h4 className="text-sm font-bold text-slate-100">{analysis.rootCauseSummary}</h4>
             <p className="text-xs text-slate-300 leading-relaxed font-sans pt-1">

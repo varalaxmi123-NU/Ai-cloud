@@ -5,6 +5,7 @@ import {
   Lock,
   Mail,
   ArrowRight,
+  ArrowLeft,
   ShieldCheck,
   Activity,
   AlertCircle,
@@ -55,21 +56,27 @@ export const SignInPage: React.FC<SignInPageProps> = ({
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0b0f19] text-white flex flex-col justify-center items-center px-4 selection:bg-cyan-500/30">
+    <div className="relative min-h-screen w-full bg-[#0b0f19] text-white flex flex-col justify-center items-center px-4 py-12 selection:bg-cyan-500/30">
       {/* Background Lighting */}
       <div className="absolute inset-0 bg-ambient-mesh pointer-events-none" />
       <div className="absolute inset-0 bg-grid-cyber pointer-events-none opacity-40" />
 
-      {/* Back button */}
-      <button
-        onClick={onBackToWelcome}
-        className="absolute top-6 left-6 text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
-      >
-        <span>&larr; Back to Welcome</span>
-      </button>
+      {/* Top action row right above the card */}
+      <div className="relative z-10 w-full max-w-md mb-4 flex items-center justify-between">
+        <button
+          onClick={onBackToWelcome}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#131b2e] hover:bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-slate-400 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Back to Welcome</span>
+        </button>
+        <span className="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
+          SRE Command Portal
+        </span>
+      </div>
 
       {/* Sign In Card */}
-      <div className="relative z-10 w-full max-w-md p-8 rounded-3xl bg-[#111827] border border-slate-700/80 shadow-2xl space-y-6">
+      <div className="relative z-10 w-full max-w-md p-6 sm:p-8 rounded-3xl bg-[#111827] border border-slate-700/80 shadow-2xl shadow-cyan-950/20 space-y-6">
         {/* Header */}
         <div className="text-center space-y-3">
           <div className="flex justify-center">

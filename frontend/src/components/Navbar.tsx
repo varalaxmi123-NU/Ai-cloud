@@ -52,19 +52,19 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isWarning = systemStatus === "ELEVATED_CASCADE_WARNING";
 
   const NAV_ITEMS = [
-    { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: "detective", label: "Failure Chain", icon: <BrainCircuit className="w-4 h-4" /> },
-    { id: "logs", label: "Logs & Analyzer", icon: <Activity className="w-4 h-4" /> },
-    { id: "investigator", label: "AI Investigator", icon: <ShieldAlert className="w-4 h-4" /> },
-    { id: "replay", label: "Failure Replay", icon: <History className="w-4 h-4" /> },
-    { id: "incidents", label: "Incidents", icon: <AlertOctagon className="w-4 h-4" /> },
-    { id: "regression", label: "Deployments", icon: <GitBranch className="w-4 h-4" /> },
-    { id: "topology", label: "Topology", icon: <Cpu className="w-4 h-4" /> },
+    { id: "dashboard", label: "Dashboard", shortLabel: "Dashboard", icon: <LayoutDashboard className="w-3.5 h-3.5 shrink-0" /> },
+    { id: "detective", label: "Failure Chain", shortLabel: "Detective", icon: <BrainCircuit className="w-3.5 h-3.5 shrink-0" /> },
+    { id: "logs", label: "Logs & Analyzer", shortLabel: "Logs", icon: <Activity className="w-3.5 h-3.5 shrink-0" /> },
+    { id: "investigator", label: "AI Investigator", shortLabel: "AI Cause", icon: <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> },
+    { id: "replay", label: "Failure Replay", shortLabel: "Replay", icon: <History className="w-3.5 h-3.5 shrink-0" /> },
+    { id: "incidents", label: "Incidents", shortLabel: "Incidents", icon: <AlertOctagon className="w-3.5 h-3.5 shrink-0" /> },
+    { id: "regression", label: "Deployments", shortLabel: "Deploys", icon: <GitBranch className="w-3.5 h-3.5 shrink-0" /> },
+    { id: "topology", label: "Topology", shortLabel: "Topology", icon: <Cpu className="w-3.5 h-3.5 shrink-0" /> },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#0c121e]/95 backdrop-blur-md shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3 sm:gap-6">
+      <div className="w-full max-w-[1540px] mx-auto px-3 sm:px-4 lg:px-6 py-2.5 flex items-center justify-between gap-2 lg:gap-4">
         
         {/* Left: Brand Logo */}
         <div
@@ -78,46 +78,47 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Center: Desktop Segmented Navigation Tabs */}
-        <nav className="hidden md:flex items-center gap-1 bg-[#141d2e] p-1 rounded-xl border border-slate-800 shadow-inner">
+        <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-[#141d2e] p-1 rounded-xl border border-slate-800 shadow-inner overflow-x-auto no-scrollbar shrink min-w-0">
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-2 lg:px-2.5 xl:px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   isActive
                     ? "bg-sky-500 text-slate-950 font-bold shadow-md shadow-sky-500/25"
                     : "text-slate-300 hover:text-white hover:bg-slate-800/60"
                 }`}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span className="hidden xl:inline">{item.label}</span>
+                <span className="inline xl:hidden">{item.shortLabel}</span>
               </button>
             );
           })}
         </nav>
 
         {/* Right Actions: Status Badge, Controls, Mobile Toggle */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           
           {/* Cluster Health Pill (Desktop & Tablet) */}
           <div className="hidden sm:flex items-center">
             {isCritical ? (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-red-950/80 border border-red-500 text-red-200 text-xs font-bold animate-pulse">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-950/80 border border-red-500 text-red-200 text-xs font-bold animate-pulse">
                 <Flame className="w-3.5 h-3.5 text-red-400" />
                 <span>Outage</span>
               </div>
             ) : isWarning ? (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-500 text-amber-200 text-xs font-bold">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-950/80 border border-amber-500 text-amber-200 text-xs font-bold">
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                 <span>Degraded</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#141d2e] border border-emerald-500/40 text-emerald-300 text-xs font-semibold">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#141d2e] border border-emerald-500/40 text-emerald-300 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400 animate-pulse" />
-                <span className="hidden lg:inline">Cluster Healthy</span>
-                <span className="text-[10px] text-slate-400 font-mono hidden xl:inline">• 8 Pods</span>
+                <span className="hidden 2xl:inline">Cluster Healthy</span>
+                <span className="inline 2xl:hidden">Healthy</span>
               </div>
             )}
           </div>
