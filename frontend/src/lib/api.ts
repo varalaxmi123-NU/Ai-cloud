@@ -1,6 +1,6 @@
 import { TopologyResponse, CascadeResult, TelemetryResponse } from "@/types/sre";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
 // Fallback in-memory state for standalone client resilience
 const DEFAULT_SERVICES = [

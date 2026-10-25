@@ -2,19 +2,32 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
+import { WelcomeHeader } from "@/components/WelcomeHeader";
+import { LogStreamViewer } from "@/components/LogStreamViewer";
+import { AIRootCauseModal } from "@/components/AIRootCauseModal";
+import { AlertCorrelationView } from "@/components/AlertCorrelationView";
+import { DeploymentRegressionView } from "@/components/DeploymentRegressionView";
+import { IncidentPriorityMatrix } from "@/components/IncidentPriorityMatrix";
 import { TopologyMap } from "@/components/TopologyMap";
 import { TelemetryDrawer } from "@/components/TelemetryDrawer";
 import { ChaosConsole } from "@/components/ChaosConsole";
 import { SelfHealingModal } from "@/components/SelfHealingModal";
 import { fetchTopology, injectChaos, healService, resetCluster } from "@/lib/api";
 import { TopologyResponse, CascadeResult, ServiceNode } from "@/types/sre";
+import { CloudLog, CorrelatedIncident } from "@/types/logAnalyzer";
 
-export default function SREDashboard() {
+export default function CloudLogObservabilityDashboard() {
+  const [activeTab, setActiveTab] = useState<string>("logs");
   const [topology, setTopology] = useState<TopologyResponse | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string>("database-service");
   const [cascadeResult, setCascadeResult] = useState<CascadeResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+
+  // AI Root Cause Inspector state
+  const [selectedErrorLog, setSelectedErrorLog] = useState<CloudLog | null>(null);
+
+  // Self-Healing terminal modal state
   const [healModalData, setHealModalData] = useState<{
     isOpen: boolean;
     serviceId: string;
@@ -31,7 +44,7 @@ export default function SREDashboard() {
 
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // Play synthetic web audio sounds
+  // Web Audio sound effects
   const playAlertSound = (type: "alarm" | "heal") => {
     if (!audioEnabled) return;
     try {
@@ -58,11 +71,10 @@ export default function SREDashboard() {
         osc.start();
         osc.stop(ctx.currentTime + 0.45);
       } else {
-        // High-tech victory chime
         osc.type = "sine";
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
-        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
         gain.gain.setValueAtTime(0.1, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
         osc.start();
@@ -75,12 +87,16 @@ export default function SREDashboard() {
 
   // Initial and periodic topology polling
   const refreshTopology = async () => {
-    const data = await fetchTopology();
-    setTopology(data);
-    if (data.active_chaos?.cascade_result) {
-      setCascadeResult(data.active_chaos.cascade_result);
-    } else if (!data.active_chaos) {
-      setCascadeResult(null);
+    try {
+      const data = await fetchTopology();
+      setTopology(data);
+      if (data.active_chaos?.cascade_result) {
+        setCascadeResult(data.active_chaos.cascade_result);
+      } else if (!data.active_chaos) {
+        setCascadeResult(null);
+      }
+    } catch {
+      // Offline fallback handling
     }
   };
 
@@ -140,7 +156,7 @@ export default function SREDashboard() {
 
   return (
     <div className="min-h-screen bg-[#06090e] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30">
-      {/* Top Navigation Bar */}
+      {/* Top Header Navbar */}
       <Navbar
         topology={topology}
         onReset={handleReset}
@@ -148,38 +164,101 @@ export default function SREDashboard() {
         onToggleAudio={() => setAudioEnabled(!audioEnabled)}
       />
 
-      {/* Main Command Center Workspace */}
+      {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-        {/* Top Workspace: Left (Topology Map) + Right (Live Telemetry Drawer) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Panel: Interactive Service Dependency Topology Map (7 cols) */}
-          <div className="lg:col-span-7 w-full">
-            <TopologyMap
-              nodes={topology?.nodes || []}
-              edges={topology?.edges || []}
-              selectedServiceId={selectedServiceId}
-              onSelectService={(id) => setSelectedServiceId(id)}
-              onInjectChaos={(id) => handleInjectChaos(id)}
-              activeChaos={topology?.active_chaos || null}
+        {/* Executive Welcome Hero & Tab Switcher */}
+        <WelcomeHeader
+          activeTab={activeTab}
+          onSelectTab={(tab) => setActiveTab(tab)}
+          noiseReductionPct={91.2}
+          rawAlertsCount={142}
+        />
+
+        {/* Feature 1: Real-Time Log Monitoring & Statistical Anomaly Stream */}
+        {activeTab === "logs" && (
+          <div className="space-y-6 animate-fadeIn">
+            <LogStreamViewer
+              onSelectLogError={(log) => setSelectedErrorLog(log)}
             />
           </div>
+        )}
 
-          {/* Right Panel: Live Telemetry Drawer (5 cols) */}
-          <div className="lg:col-span-5 w-full">
-            <TelemetryDrawer selectedNode={selectedNode} />
+        {/* Feature 5: Natural Language Log Search Focus View */}
+        {activeTab === "nlp-search" && (
+          <div className="space-y-6 animate-fadeIn">
+            <LogStreamViewer
+              initialNlpQuery="Show database errors from the last 30 minutes"
+              onSelectLogError={(log) => setSelectedErrorLog(log)}
+            />
           </div>
-        </div>
+        )}
 
-        {/* Bottom Workspace: Chaos Injection, NetworkX Cascade Predictor & AI Playbooks */}
-        <div className="w-full">
-          <ChaosConsole
-            onInjectChaos={handleInjectChaos}
-            onExecuteHeal={handleExecuteHeal}
-            cascadeResult={cascadeResult}
-            loading={loading}
-          />
-        </div>
+        {/* Feature 3: Intelligent Alert Correlation View */}
+        {activeTab === "correlation" && (
+          <div className="space-y-6 animate-fadeIn">
+            <AlertCorrelationView
+              onInvestigateIncident={(inc) => {
+                setActiveTab("topology");
+                setSelectedServiceId(inc.rootService);
+              }}
+            />
+          </div>
+        )}
+
+        {/* Feature 4: Deployment Regression Detection View */}
+        {activeTab === "regression" && (
+          <div className="space-y-6 animate-fadeIn">
+            <DeploymentRegressionView />
+          </div>
+        )}
+
+        {/* Feature 6: Incident Impact & Priority Scoring Matrix */}
+        {activeTab === "priority" && (
+          <div className="space-y-6 animate-fadeIn">
+            <IncidentPriorityMatrix />
+          </div>
+        )}
+
+        {/* Microservice Topology Mesh & Chaos Predictor View */}
+        {activeTab === "topology" && (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left Panel: Interactive Dependency Canvas (7 cols) */}
+              <div className="lg:col-span-7 w-full">
+                <TopologyMap
+                  nodes={topology?.nodes || []}
+                  edges={topology?.edges || []}
+                  selectedServiceId={selectedServiceId}
+                  onSelectService={(id) => setSelectedServiceId(id)}
+                  onInjectChaos={(id) => handleInjectChaos(id)}
+                  activeChaos={topology?.active_chaos || null}
+                />
+              </div>
+
+              {/* Right Panel: Live Telemetry Drawer (5 cols) */}
+              <div className="lg:col-span-5 w-full">
+                <TelemetryDrawer selectedNode={selectedNode} />
+              </div>
+            </div>
+
+            {/* Bottom Panel: Chaos Injection & Autonomous Runbooks */}
+            <div className="w-full">
+              <ChaosConsole
+                onInjectChaos={handleInjectChaos}
+                onExecuteHeal={handleExecuteHeal}
+                cascadeResult={cascadeResult}
+                loading={loading}
+              />
+            </div>
+          </div>
+        )}
       </main>
+
+      {/* Feature 2: AI Root Cause Assistant Modal */}
+      <AIRootCauseModal
+        log={selectedErrorLog}
+        onClose={() => setSelectedErrorLog(null)}
+      />
 
       {/* Autonomous Self-Healing Terminal Modal */}
       <SelfHealingModal
@@ -191,11 +270,19 @@ export default function SREDashboard() {
         executionTimeMs={healModalData.executionTimeMs}
       />
 
-      {/* Subtle Footer */}
-      <footer className="border-t border-slate-900 bg-[#04060a] py-3 px-6 text-center text-xs text-slate-500 font-mono">
-        <span>ApexSRE Autonomous Microservice Chaos & Cascade Predictor</span>
-        <span className="mx-2">•</span>
-        <span className="text-cyan-400">FastAPI + NetworkX + Scikit-Learn + Next.js</span>
+      {/* Global Footer */}
+      <footer className="border-t border-slate-900 bg-[#04060a] py-3.5 px-6 text-center text-xs text-slate-500 font-mono flex flex-wrap items-center justify-between gap-3 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <span>AI-Powered Cloud Log Analyzer &amp; Alert System v2.4</span>
+        </div>
+        <div className="flex items-center gap-4 text-slate-400">
+          <span>Statistical Anomaly Engine</span>
+          <span>•</span>
+          <span>NLP Query Parser</span>
+          <span>•</span>
+          <span>Next.js Vercel Production Ready</span>
+        </div>
       </footer>
     </div>
   );

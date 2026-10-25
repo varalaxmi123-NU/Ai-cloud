@@ -1,0 +1,11 @@
+{
+  "name": "ai-cloud-log-analyzer",
+  "version": "2.4.0",
+  "private": true,
+  "description": "AI-Powered Cloud Log Analyzer and Alert System with Real-Time Anomaly Detection, NLP Search, Correlation, and Regression Prevention",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start --prefix frontend"
+  }
+}
