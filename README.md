@@ -8,12 +8,12 @@
 
 An enterprise-grade cloud observability and resilience engineering platform designed to ingest multi-format application logs, isolate critical anomalies, explain root causes with verified evidence, and reconstruct cascading failures across distributed microservices.
 
-🌐 **Live Production Deployment**: [https://ai-cloud-9ved.vercel.app](https://ai-cloud-9ved.vercel.app)  
-🔑 **Demo Evaluation Credentials**: Email: `company@gmail.com` • Password: `1234` *(Includes 1-click Auto-Fill)*
+**Live Production Deployment**: [https://ai-cloud-9ved.vercel.app](https://ai-cloud-9ved.vercel.app)  
+ **Demo Evaluation Credentials**: Email: `company@gmail.com` • Password: `1234` *(Includes 1-click Auto-Fill)*
 
 ---
 
-## 🌟 Key Capabilities & Implemented Modules
+## Key Capabilities & Implemented Modules
 
 ### 1. Failure Chain Detective (Signature Innovation)
 Traces how isolated warnings develop into system-wide outages across distributed microservices.
@@ -81,7 +81,7 @@ Structured operational dashboard built for rapid incident triage:
 
 ---
 
-## 🏗️ Architecture & Technology Stack
+##  Architecture & Technology Stack
 
 | Layer | Technologies |
 |---|---|
@@ -95,7 +95,7 @@ Structured operational dashboard built for rapid incident triage:
 
 ---
 
-## 🚀 Deployment
+##  Deployment
 
 ### Live Production URL
 The platform is deployed live at:
@@ -115,7 +115,7 @@ The platform is deployed live at:
 
 ---
 
-## 💻 Local Development Setup
+##  Local Development Setup
 
 ### Prerequisites
 - Node.js 18.17+ or 20+
@@ -142,7 +142,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🔐 Demo Credentials
+## Demo Credentials
 
 To access the SRE Command Center:
 - **Email**: `company@gmail.com`
@@ -151,7 +151,7 @@ To access the SRE Command Center:
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 .
@@ -184,6 +184,6 @@ To access the SRE Command Center:
 
 ---
 
-## 🛡️ License
+##  License
 
 MIT License. Open-source Cloud Observability & Reliability Engineering System.
