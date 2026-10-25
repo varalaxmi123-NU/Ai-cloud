@@ -89,15 +89,15 @@ export const EnterpriseLogo: React.FC<LogoProps> = ({
 
       {showText && (
         <div className="flex flex-col text-left">
-          <div className="flex items-center gap-2">
-            <span className="font-extrabold text-white text-lg tracking-tight leading-none">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="font-extrabold text-white text-base sm:text-lg tracking-tight leading-none">
               Cloud<span className="text-sky-400">Log</span>
             </span>
-            <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold tracking-widest text-slate-300 bg-slate-800 border border-slate-700/80 rounded">
+            <span className="px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold tracking-widest text-slate-300 bg-slate-800 border border-slate-700/80 rounded">
               ENTERPRISE
             </span>
           </div>
-          <span className="text-[10px] text-slate-400 tracking-wider font-semibold uppercase mt-0.5">
+          <span className="text-[9px] sm:text-[10px] text-slate-400 tracking-wider font-semibold uppercase mt-0.5 hidden sm:block">
             Distributed Systems Observability
           </span>
         </div>

@@ -432,18 +432,27 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
 
       {/* SECTION 3: The Log Records Table (High Contrast, Clean Separation, Generous Spacing) */}
       <section className="rounded-2xl border border-slate-800 bg-[#0a0f1d] overflow-hidden shadow-2xl">
-        {/* Table Header */}
-        <div className="px-6 py-3.5 bg-[#111827] border-b border-slate-800 text-slate-400 text-[11px] font-bold uppercase tracking-wider flex items-center gap-4">
-          <div className="w-28 shrink-0">Timestamp</div>
-          <div className="w-40 shrink-0">Microservice</div>
-          <div className="w-24 shrink-0 text-center">Severity</div>
-          <div className="flex-1">Log Message &amp; Diagnostic Details</div>
-          <div className="w-20 shrink-0 text-right">Latency</div>
-          <div className="w-28 shrink-0 text-right">Diagnosis</div>
+        {/* Mobile Swipe Hint Bar (< 768px) */}
+        <div className="md:hidden px-4 py-2 bg-[#111827] border-b border-slate-800 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+          <span>Live Diagnostics Stream</span>
+          <span className="text-sky-400 flex items-center gap-1 font-semibold">Swipe horizontally &rarr;</span>
         </div>
 
-        {/* Table Rows Body */}
-        <div className="max-h-[560px] overflow-y-auto divide-y divide-slate-800/60 text-xs">
+        {/* Responsive Table Scroll Container */}
+        <div className="overflow-x-auto no-scrollbar mobile-touch-scroll">
+          <div className="min-w-[760px]">
+            {/* Table Header */}
+            <div className="px-6 py-3.5 bg-[#111827] border-b border-slate-800 text-slate-400 text-[11px] font-bold uppercase tracking-wider flex items-center gap-4">
+              <div className="w-28 shrink-0">Timestamp</div>
+              <div className="w-40 shrink-0">Microservice</div>
+              <div className="w-24 shrink-0 text-center">Severity</div>
+              <div className="flex-1">Log Message &amp; Diagnostic Details</div>
+              <div className="w-20 shrink-0 text-right">Latency</div>
+              <div className="w-28 shrink-0 text-right">Diagnosis</div>
+            </div>
+
+            {/* Table Rows Body */}
+            <div className="max-h-[560px] overflow-y-auto divide-y divide-slate-800/60 text-xs">
           {logs.length === 0 ? (
             <div className="py-24 text-center text-slate-400 space-y-2">
               <span className="block text-sm font-semibold text-slate-200">No logs match your filter criteria</span>
@@ -549,6 +558,8 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
               );
             })
           )}
+            </div>
+          </div>
         </div>
       </section>
     </div>

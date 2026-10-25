@@ -146,3 +146,55 @@ body {
   color: #6ee7b7;
   border: 1px solid rgba(16, 185, 129, 0.5);
 }
+
+/* ========================================================
+   RESPONSIVE MEDIA QUERIES & UTILITIES FOR ALL DEVICE SIZES
+   ======================================================== */
+
+/* Smooth hide scrollbars for mobile horizontal pill carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile Devices (Phones: < 640px) */
+@media (max-width: 639px) {
+  html, body {
+    font-size: 14px;
+  }
+
+  /* Optimize touch target sizing */
+  button, select, input {
+    touch-action: manipulation;
+  }
+
+  .mobile-touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Tablet Devices (640px to 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .tablet-grid-responsive {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Laptops & Standard Desktops (1024px to 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .desktop-grid-responsive {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Ultra-wide Monitors (>= 1440px) */
+@media (min-width: 1440px) {
+  .ultrawide-container {
+    max-width: 1440px;
+  }
+}
+
