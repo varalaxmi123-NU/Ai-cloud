@@ -207,8 +207,8 @@ export const ChaosConsole: React.FC<ChaosConsoleProps> = ({
               disabled={loading}
               className="mt-4 w-full py-3 px-4 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white shadow-lg shadow-red-900/50 hover:shadow-red-700/60 transition-all hover:scale-[1.01] flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Flame className="w-4 h-4 text-white animate-bounce" />
-              <span>{loading ? "INJECTING CHAOS..." : "⚡ INJECT CHAOS / KILL NODE"}</span>
+              <Flame className="w-4 h-4 text-white" />
+              <span>{loading ? "Injecting Chaos..." : "Inject Chaos / Terminate Node"}</span>
             </button>
           </div>
         </div>
@@ -379,7 +379,7 @@ export const ChaosConsole: React.FC<ChaosConsoleProps> = ({
                       }`}
                     >
                       <Zap className="w-3.5 h-3.5" />
-                      <span>{pb.recommended ? "⚡ EXECUTE AUTONOMOUS SELF-HEALING" : "Execute Alternative"}</span>
+                      <span>{pb.recommended ? "Execute Autonomous Self-Healing" : "Execute Alternative"}</span>
                     </button>
                   </div>
                 ))}

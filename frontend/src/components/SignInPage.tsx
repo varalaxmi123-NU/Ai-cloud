@@ -160,7 +160,10 @@ export const SignInPage: React.FC<SignInPageProps> = ({
             {loading ? (
               <span>Authenticating...</span>
             ) : success ? (
-              <span>Access Granted ✓</span>
+              <span className="flex items-center gap-1.5 text-emerald-300">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>Access Granted</span>
+              </span>
             ) : (
               <>
                 <span>Sign In to Dashboard</span>

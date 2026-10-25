@@ -184,7 +184,7 @@ export const DeploymentRegressionView: React.FC = () => {
               className="mt-3 w-full py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-rose-900/40"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${rollingBack ? "animate-spin" : ""}`} />
-              <span>{rollingBack ? "Rolling Back Canary..." : "⚡ Trigger Instant Canary Rollback"}</span>
+              <span>{rollingBack ? "Rolling Back Canary Release..." : "Trigger Instant Canary Rollback"}</span>
             </button>
           ) : (
             <div className="mt-3 py-1.5 px-3 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-center font-bold text-xs flex items-center justify-center gap-1.5">
