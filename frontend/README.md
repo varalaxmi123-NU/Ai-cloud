@@ -1,6 +1,10 @@
 # CloudLog Enterprise — Frontend Application
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-ai--cloud--9ved.vercel.app-0070f3?style=flat&logo=vercel&logoColor=white)](https://ai-cloud-9ved.vercel.app/)
+
 Next.js 16 (App Router), TypeScript, and Tailwind CSS client application for CloudLog Enterprise.
+
+🌐 **Live Production Deployment**: [https://ai-cloud-9ved.vercel.app](https://ai-cloud-9ved.vercel.app)
 
 ## Quick Start
 
@@ -14,14 +18,6 @@ npm run dev -- -p 3000
 # Build production bundle
 npm run build
 ```
-
-## Vercel Deployment
-
-Deploy this folder directly to Vercel:
-```bash
-npx vercel
-```
-Or import the repository in [Vercel Dashboard](https://vercel.com/new) and set the Root Directory to `frontend`.
 
 ## Features
 - **Failure Chain Detective**: Interactive causal failure chain with clickable log proof.

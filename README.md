@@ -1,20 +1,21 @@
 # CloudLog Enterprise — AI Cloud Log Analyzer & SRE Resilience Platform
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-ai--cloud--9ved.vercel.app-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-cloud-9ved.vercel.app/)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16.0-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
-[![Deployment: Vercel Ready](https://img.shields.io/badge/Deployment-Vercel%20Ready-white?style=flat&logo=vercel)](https://vercel.com)
 
-A high-performance cloud observability and resilience engineering platform designed to ingest multi-format application logs, isolate critical anomalies, explain root causes with verified evidence, and reconstruct cascading failures across distributed microservices.
+An enterprise-grade cloud observability and resilience engineering platform designed to ingest multi-format application logs, isolate critical anomalies, explain root causes with verified evidence, and reconstruct cascading failures across distributed microservices.
 
-Built for Site Reliability Engineers (SREs), DevOps practitioners, and platform teams.
+🌐 **Live Production Deployment**: [https://ai-cloud-9ved.vercel.app](https://ai-cloud-9ved.vercel.app)  
+🔑 **Demo Evaluation Credentials**: Email: `company@gmail.com` • Password: `1234` *(Includes 1-click Auto-Fill)*
 
 ---
 
-## Key Capabilities & Core Modules
+## 🌟 Key Capabilities & Implemented Modules
 
-### 1. Failure Chain Detective (Highlighted Standout Feature)
+### 1. Failure Chain Detective (Signature Innovation)
 Traces how isolated warnings develop into system-wide outages across distributed microservices.
 - **Chronological Causal Flow**: Visualizes multi-stage failure cascades step-by-step:
   $$\text{Database Latency Surge} \longrightarrow \text{Connection Pool Exhaustion} \longrightarrow \text{Payment API 504s} \longrightarrow \text{Checkout Service Outage}$$
@@ -80,45 +81,41 @@ Structured operational dashboard built for rapid incident triage:
 
 ---
 
-## Architecture & Technology Stack
+## 🏗️ Architecture & Technology Stack
 
 | Layer | Technologies |
 |---|---|
+| **Live Production** | [https://ai-cloud-9ved.vercel.app](https://ai-cloud-9ved.vercel.app) |
 | **Frontend Framework** | Next.js 16 (App Router), React 19, TypeScript |
-| **Styling & UI** | Tailwind CSS 4, Custom High-Contrast Glassmorphism, CSS Variables |
-| **Icons & Visuals** | Lucide React (strictly SVG icons, no unicode emojis) |
+| **Styling & Design System** | Tailwind CSS 4, Custom High-Contrast Glassmorphism, CSS Variables |
+| **Visuals & Icons** | Lucide React (strictly SVG icons, zero unicode emojis) |
 | **Log Parsing Engine** | Universal Regex & JSON Client-Side Stream Parser (`src/lib/logParser.ts`) |
 | **Backend & APIs** | Next.js Serverless Route Handlers (`/api/*`) + Optional FastAPI SRE Engine |
-| **Deployment Target** | Vercel (Edge & Serverless), Docker compatible |
+| **Deployment Infrastructure** | Vercel Serverless Edge, Docker compatible |
 
 ---
 
-## Deployment to Vercel
+## 🚀 Deployment
 
-This repository is pre-configured with `vercel.json` and standalone Next.js serverless route handlers.
+### Live Production URL
+The platform is deployed live at:
+**[https://ai-cloud-9ved.vercel.app](https://ai-cloud-9ved.vercel.app)**
 
-### Option 1: Deploy via Vercel Dashboard (Recommended)
+### Deploying Your Own Instance on Vercel
 
-1. Push or import your repository to your **GitHub** account.
+1. Push or fork this repository to your **GitHub** account.
 2. Go to [https://vercel.com/new](https://vercel.com/new).
 3. Under **Import Git Repository**, select your repository.
 4. Configure your project:
    - **Framework Preset**: Next.js (auto-detected)
-   - **Root Directory**: Select `frontend` (or leave as root if using the root `vercel.json`)
+   - **Root Directory**: `frontend` (or leave as root with `vercel.json`)
    - **Build Command**: `npm run build`
    - **Output Directory**: `.next`
 5. Click **Deploy**. Vercel will build and deploy the application in under 2 minutes.
 
-### Option 2: Deploy via Vercel CLI
-
-```bash
-cd frontend
-npx vercel
-```
-
 ---
 
-## Local Development Setup
+## 💻 Local Development Setup
 
 ### Prerequisites
 - Node.js 18.17+ or 20+
@@ -127,7 +124,7 @@ npx vercel
 ### Quick Start
 
 ```bash
-# 1. Clone repository
+# 1. Clone your repository
 git clone <your-repository-url>
 cd <repository-folder>
 
@@ -145,16 +142,16 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## Demo Credentials
+## 🔐 Demo Credentials
 
-To access the SRE Command Center from the landing page:
+To access the SRE Command Center:
 - **Email**: `company@gmail.com`
 - **Password**: `1234`
 *(An auto-fill button is provided on the sign-in screen for quick evaluation).*
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 .
@@ -187,6 +184,6 @@ To access the SRE Command Center from the landing page:
 
 ---
 
-## License
+## 🛡️ License
 
 MIT License. Open-source Cloud Observability & Reliability Engineering System.
