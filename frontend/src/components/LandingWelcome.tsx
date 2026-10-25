@@ -1,69 +1,345 @@
 "use client";
 
-import React from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Activity,
+  Layers,
+  GitBranch,
+  Terminal,
+  Search,
+  AlertOctagon,
+  Cpu,
+  CheckCircle2,
+  Database,
+  Server,
+  KeyRound,
+  ExternalLink,
+  Zap,
+  SlidersHorizontal,
+  Clock
+} from "lucide-react";
 import { EnterpriseLogo } from "@/components/EnterpriseLogo";
 
 interface LandingWelcomeProps {
   onGetStarted: () => void;
 }
 
+const MOCK_TERMINAL_LOGS = [
+  { time: "07:09:26", service: "redis-cache", level: "INFO", msg: "HGET user_session:8819 hit=true [duration=12ms]" },
+  { time: "07:09:25", service: "api-gateway", level: "INFO", msg: "GET /api/v2/orders 200 OK [duration=24ms]" },
+  { time: "07:09:24", service: "database-service", level: "WARN", msg: "Connection pool utilization 84% (Threshold: 80%)" },
+  { time: "07:09:22", service: "payment-gateway", level: "ERROR", msg: "Connection timeout (504) -> stripe.api.internal [duration=512ms]" },
+  { time: "07:09:20", service: "cloudlog-engine", level: "HEAL", msg: "Correlated 42 alerts -> Incident #INC-9481 (Noise Filter: 91.2%)" },
+];
+
 export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) => {
+  const [activeLogIndex, setActiveLogIndex] = useState<number>(3);
+
+  // Dynamic log ticker in preview window
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveLogIndex((prev) => (prev + 1) % MOCK_TERMINAL_LOGS.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="relative min-h-screen w-full bg-[#080d19] text-white flex flex-col justify-between overflow-hidden selection:bg-sky-500/30">
-      {/* Ambient Radial Lights */}
+    <div className="relative min-h-screen w-full bg-[#070b14] text-white flex flex-col justify-between overflow-x-hidden selection:bg-sky-500/30">
+      {/* Ambient Lighting & High-Tech Grid */}
       <div className="absolute inset-0 bg-ambient-mesh pointer-events-none" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full bg-gradient-to-tr from-sky-600/15 via-indigo-600/10 to-transparent blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] rounded-full bg-gradient-to-b from-sky-500/10 via-indigo-500/5 to-transparent blur-[160px] pointer-events-none" />
 
       {/* Top Navbar */}
-      <header className="relative z-10 max-w-6xl w-full mx-auto px-6 py-6 flex items-center justify-between">
-        <EnterpriseLogo size={36} />
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#070b14]/90 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <EnterpriseLogo size={36} />
 
-        <button
-          onClick={onGetStarted}
-          className="text-xs font-semibold px-4 py-2 rounded-xl text-slate-300 hover:text-white bg-[#111827] hover:bg-slate-800 border border-slate-700/80 transition-all cursor-pointer shadow-sm"
-        >
-          Sign In
-        </button>
+          <div className="flex items-center gap-4">
+            {/* System Status Pill */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0f172a] border border-slate-800 text-xs text-slate-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>All 8 Microservices Operational</span>
+            </div>
+
+            {/* Quick Demo Credentials Pill */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 font-mono text-xs text-slate-400">
+              <KeyRound className="w-3.5 h-3.5 text-sky-400" />
+              <span>company@gmail.com</span>
+            </div>
+
+            {/* Sign In CTA */}
+            <button
+              onClick={onGetStarted}
+              className="text-xs font-bold px-4 py-2 rounded-xl text-white bg-sky-600 hover:bg-sky-500 transition-all cursor-pointer shadow-md shadow-sky-600/30 flex items-center gap-1.5"
+            >
+              <span>Sign In</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </header>
 
-      {/* Hero: "Welcome to CloudLog" + "Get Started" (Minimalist, High Impact) */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 max-w-3xl mx-auto py-16">
-        {/* Subtle pill tag */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#111827]/90 border border-slate-700/80 text-slate-200 text-xs font-semibold mb-8 shadow-lg backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
-          <span>Cloud Systems Observability &amp; Log Intelligence</span>
+      {/* Main Hero Container */}
+      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-6 py-12 md:py-20 flex flex-col items-center">
+        
+        {/* Badge Pill */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0f172a] border border-slate-700/80 text-slate-200 text-xs font-semibold mb-6 shadow-xl backdrop-blur-md">
+          <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+          <span className="text-slate-400 font-normal">CloudLog Platform v2.4</span>
+          <span className="text-slate-600">•</span>
+          <span className="text-sky-300">Distributed Observability &amp; SRE Engine</span>
         </div>
 
-        {/* Hero Title */}
-        <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white leading-tight">
-          Welcome to{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-indigo-300">
-            CloudLog
-          </span>
-        </h1>
+        {/* Hero Headline */}
+        <div className="text-center max-w-4xl space-y-4">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.1]">
+            Next-Generation{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-indigo-400">
+              Cloud Log Intelligence
+            </span>
+          </h1>
+          <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
+            High-throughput telemetry ingestion, statistical outlier surge detection, and autonomous root-cause remediation for modern microservice clusters.
+          </p>
+        </div>
 
-        {/* Minimal Subtitle */}
-        <p className="mt-6 text-base sm:text-xl text-slate-300 max-w-xl leading-relaxed font-normal">
-          High-performance distributed log streaming, statistical anomaly surge detection, and autonomous incident diagnosis.
-        </p>
-
-        {/* "Get Started" Call to Action */}
-        <div className="mt-10">
+        {/* Call to Action Button Row */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
           <button
             onClick={onGetStarted}
-            className="group relative px-9 py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-base tracking-wide shadow-2xl shadow-sky-500/30 transition-all hover:scale-[1.03] hover:shadow-sky-500/50 cursor-pointer flex items-center gap-3"
+            className="group px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-base tracking-wide shadow-2xl shadow-sky-500/30 transition-all hover:scale-[1.03] cursor-pointer flex items-center gap-3"
           >
-            <span>Get Started</span>
-            <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1.5 transition-transform" />
+            <span>Launch Command Center</span>
+            <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
           </button>
+
+          <button
+            onClick={onGetStarted}
+            className="px-6 py-4 rounded-2xl bg-[#0f172a] hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white font-semibold text-sm transition-all cursor-pointer flex items-center gap-2"
+          >
+            <KeyRound className="w-4 h-4 text-sky-400" />
+            <span>Demo: company@gmail.com (1234)</span>
+          </button>
+        </div>
+
+        {/* Floating Live Product Telemetry Window Preview */}
+        <div className="mt-14 w-full max-w-4xl rounded-2xl border border-slate-800 bg-[#0c1220]/95 shadow-2xl shadow-black/80 overflow-hidden backdrop-blur-xl transition-all">
+          {/* Mac-Style Window Header */}
+          <div className="px-4 py-3 bg-[#111827] border-b border-slate-800 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-rose-500/80" />
+              <span className="w-3 h-3 rounded-full bg-amber-500/80" />
+              <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+              <span className="ml-2 font-mono text-slate-400 text-[11px]">
+                cloudlog-agent --cluster=prod-us-east-cluster --pods=8
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
+              <span className="flex items-center gap-1.5 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Live Ingestion</span>
+              </span>
+              <span>88,650 req/s</span>
+            </div>
+          </div>
+
+          {/* Terminal Console Logs */}
+          <div className="p-5 font-mono text-xs space-y-2.5 max-h-56 overflow-hidden">
+            {MOCK_TERMINAL_LOGS.map((log, idx) => (
+              <div
+                key={idx}
+                className={`flex items-start gap-3 p-2 rounded-lg transition-colors ${
+                  idx === activeLogIndex ? "bg-sky-950/40 border border-sky-500/30" : "hover:bg-slate-800/30"
+                }`}
+              >
+                <span className="text-slate-500 shrink-0">{log.time} UTC</span>
+                <span className="px-2 py-0.5 rounded bg-slate-800 text-sky-300 text-[10px] shrink-0 font-bold">
+                  {log.service}
+                </span>
+                <span
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                    log.level === "ERROR"
+                      ? "bg-rose-600 text-white"
+                      : log.level === "WARN"
+                      ? "bg-amber-600 text-white"
+                      : log.level === "HEAL"
+                      ? "bg-emerald-600 text-white"
+                      : "bg-slate-800 text-slate-300"
+                  }`}
+                >
+                  {log.level}
+                </span>
+                <span className="text-slate-200 break-all">{log.msg}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Window Footer Stats Ribbon */}
+          <div className="px-5 py-3 bg-[#080d19] border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono text-slate-400">
+            <div>
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Latency p99</span>
+              <span className="text-white font-bold">14.2 ms</span>
+            </div>
+            <div>
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Error Surge Limit</span>
+              <span className="text-emerald-400 font-bold">&lt; 3.5% (Nominal)</span>
+            </div>
+            <div>
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Noise Filter</span>
+              <span className="text-sky-400 font-bold">91.2% Suppressed</span>
+            </div>
+            <div>
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Canary Status</span>
+              <span className="text-amber-300 font-bold">v2.4.2 In Review</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Enterprise Bento Grid: Core Capabilities */}
+        <div className="mt-20 w-full">
+          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Enterprise Observability Built for SRE Resilience
+            </h2>
+            <p className="text-sm text-slate-400">
+              Six synchronized operational layers designed to eliminate outage downtime before users notice.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Feature 1 */}
+            <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-400 flex items-center justify-center mb-4">
+                <Activity className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Real-Time Log Ingestion &amp; Outliers</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Buffer distributed logs with sub-millisecond overhead. Automatically detects statistical error rate anomalies with configurable Z-score thresholds.
+              </p>
+              <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>Threshold: 3.5% Surge</span>
+                <span className="text-sky-400 font-semibold">Active Engine</span>
+              </div>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mb-4">
+                <Layers className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Intelligent Alert Correlation</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Reduces alert fatigue by 91%. Clusters hundreds of repetitive cascading errors into a single coherent incident envelope with root-cause tracing.
+              </p>
+              <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>142 Alerts &rarr; 3 Incidents</span>
+                <span className="text-indigo-400 font-semibold">91.2% Reduction</span>
+              </div>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-4">
+                <GitBranch className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Deployment Regression Detection</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Compares error velocity before and after release deployment. Flags canary regressions with 1-click automated rollback to stable baselines.
+              </p>
+              <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>v2.4.1 vs v2.4.2</span>
+                <span className="text-amber-400 font-semibold">Instant Rollback</span>
+              </div>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center mb-4">
+                <Search className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Natural-Language Log Search</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Query logs across all 8 microservices using plain English. Translates semantic queries into structured filter syntax instantly.
+              </p>
+              <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>Natural Language NLP</span>
+                <span className="text-purple-400 font-semibold">Sub-10ms Filter</span>
+              </div>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center mb-4">
+                <AlertOctagon className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Incident Priority Scoring Matrix</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Multi-factor mathematical priority formula scoring incidents from P1 Critical down to P4 Info based on blast radius and error growth.
+              </p>
+              <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>P1 &rarr; P4 Algorithm</span>
+                <span className="text-rose-400 font-semibold">Blast Radius</span>
+              </div>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-4">
+                <Terminal className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Autonomous Self-Healing Runbooks</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Remediate node saturations, restart degraded database connection pools, and redirect traffic through interactive terminal runbooks.
+              </p>
+              <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>MTTR &lt; 1.5s</span>
+                <span className="text-emerald-400 font-semibold">Runbook Engine</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Distributed Stack Support Banner */}
+        <div className="mt-16 w-full max-w-4xl p-6 rounded-2xl bg-[#0c1220] border border-slate-800/80 text-center space-y-4">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">
+            Engineered For Modern Microservice Architectures
+          </span>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono text-slate-300">
+            <span className="px-3 py-1.5 rounded-lg bg-[#141d2e] border border-slate-700">PostgreSQL</span>
+            <span className="px-3 py-1.5 rounded-lg bg-[#141d2e] border border-slate-700">Envoy Proxy</span>
+            <span className="px-3 py-1.5 rounded-lg bg-[#141d2e] border border-slate-700">Redis Cluster</span>
+            <span className="px-3 py-1.5 rounded-lg bg-[#141d2e] border border-slate-700">OAuth2 Gateway</span>
+            <span className="px-3 py-1.5 rounded-lg bg-[#141d2e] border border-slate-700">Kafka Pipelines</span>
+            <span className="px-3 py-1.5 rounded-lg bg-[#141d2e] border border-slate-700">Kubernetes &amp; Docker</span>
+          </div>
+        </div>
+
+        {/* Final Call to Action Box */}
+        <div className="mt-14 w-full max-w-3xl p-8 rounded-3xl bg-gradient-to-r from-sky-950/60 via-indigo-950/50 to-slate-900 border border-sky-500/30 text-center space-y-4 shadow-2xl">
+          <h3 className="text-2xl font-black text-white tracking-tight">
+            Ready to Inspect Distributed Production Logs?
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
+            Access the live command center with sample microservice telemetry and self-healing runbooks.
+          </p>
+          <div className="pt-2">
+            <button
+              onClick={onGetStarted}
+              className="px-8 py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-sm tracking-wide shadow-xl shadow-sky-500/30 transition-all hover:scale-[1.02] cursor-pointer inline-flex items-center gap-2"
+            >
+              <span>Get Started with CloudLog</span>
+              <ArrowRight className="w-4 h-4 text-slate-950" />
+            </button>
+          </div>
         </div>
       </main>
 
-      {/* Minimal Bottom Footer */}
-      <footer className="relative z-10 max-w-6xl w-full mx-auto px-6 py-6 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-500">
-        <span>&copy; 2026 CloudLog Systems, Inc.</span>
-        <span className="font-mono">v2.4 Enterprise Production</span>
+      {/* Footer */}
+      <footer className="relative z-10 w-full border-t border-slate-800/80 bg-[#070b14] py-6 px-6 mt-16 text-center text-xs text-slate-500 flex flex-wrap items-center justify-between max-w-7xl mx-auto">
+        <span>&copy; 2026 CloudLog Systems, Inc. Enterprise Infrastructure.</span>
+        <span className="font-mono">Ready for Vercel Serverless Deployment</span>
       </footer>
     </div>
   );
