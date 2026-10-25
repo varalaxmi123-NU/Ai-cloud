@@ -24,6 +24,7 @@ import {
   BrainCircuit
 } from "lucide-react";
 import { EnterpriseLogo } from "@/components/EnterpriseLogo";
+import { OverviewDashboard } from "@/components/OverviewDashboard";
 
 interface LandingWelcomeProps {
   onGetStarted: () => void;
@@ -151,77 +152,38 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
           </span>
         </div>
 
-        {/* Floating Live Product Telemetry Window Preview */}
-        <div className="mt-14 w-full max-w-4xl rounded-2xl border border-slate-800 bg-[#0c1220]/95 shadow-2xl shadow-black/80 overflow-hidden backdrop-blur-xl transition-all">
-          {/* Mac-Style Window Header */}
-          <div className="px-4 py-3 bg-[#111827] border-b border-slate-800 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
+        {/* Full-Scale Live Interactive Observability Dashboard Showcase */}
+        <div className="mt-12 w-full max-w-6xl rounded-3xl border border-slate-800 bg-[#0c1220]/95 shadow-2xl shadow-black/90 p-4 sm:p-6 overflow-hidden backdrop-blur-2xl transition-all">
+          <div className="mb-4 pb-4 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
               <span className="w-3 h-3 rounded-full bg-rose-500/80" />
               <span className="w-3 h-3 rounded-full bg-amber-500/80" />
               <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-              <span className="ml-2 font-mono text-slate-400 text-[11px]">
-                cloudlog-agent --cluster=prod-us-east-cluster --pods=8
+              <span className="ml-2 font-mono text-slate-300 font-semibold">
+                CloudLog Observability Command Center • Live Interactive Preview
               </span>
             </div>
-            <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
-              <span className="flex items-center gap-1.5 text-emerald-400">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono text-[11px] font-bold flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Live Ingestion</span>
+                <span>Live Telemetry Connected</span>
               </span>
-              <span>88,650 req/s</span>
-            </div>
-          </div>
-
-          {/* Terminal Console Logs */}
-          <div className="p-5 font-mono text-xs space-y-2.5 max-h-56 overflow-hidden">
-            {MOCK_TERMINAL_LOGS.map((log, idx) => (
-              <div
-                key={idx}
-                className={`flex items-start gap-3 p-2 rounded-lg transition-colors ${
-                  idx === activeLogIndex ? "bg-sky-950/40 border border-sky-500/30" : "hover:bg-slate-800/30"
-                }`}
+              <button
+                onClick={onGetStarted}
+                className="px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition-all shadow-md shadow-sky-600/30 flex items-center gap-1 cursor-pointer"
               >
-                <span className="text-slate-500 shrink-0">{log.time} UTC</span>
-                <span className="px-2 py-0.5 rounded bg-slate-800 text-sky-300 text-[10px] shrink-0 font-bold">
-                  {log.service}
-                </span>
-                <span
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${
-                    log.level === "ERROR"
-                      ? "bg-rose-600 text-white"
-                      : log.level === "WARN"
-                      ? "bg-amber-600 text-white"
-                      : log.level === "HEAL"
-                      ? "bg-emerald-600 text-white"
-                      : "bg-slate-800 text-slate-300"
-                  }`}
-                >
-                  {log.level}
-                </span>
-                <span className="text-slate-200 break-all">{log.msg}</span>
-              </div>
-            ))}
+                <span>Open Full App</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
+            </div>
           </div>
 
-          {/* Window Footer Stats Ribbon */}
-          <div className="px-5 py-3 bg-[#080d19] border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono text-slate-400">
-            <div>
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Latency p99</span>
-              <span className="text-white font-bold">14.2 ms</span>
-            </div>
-            <div>
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Error Surge Limit</span>
-              <span className="text-emerald-400 font-bold">&lt; 3.5% (Nominal)</span>
-            </div>
-            <div>
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Noise Filter</span>
-              <span className="text-sky-400 font-bold">91.2% Suppressed</span>
-            </div>
-            <div>
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Canary Status</span>
-              <span className="text-amber-300 font-bold">v2.4.2 In Review</span>
-            </div>
-          </div>
+          {/* Render the full interactive dashboard inside the preview frame */}
+          <OverviewDashboard
+            topology={null}
+            onNavigateTab={() => onGetStarted()}
+            isLandingPreview={true}
+          />
         </div>
 
         {/* Enterprise Bento Grid: Core Capabilities */}

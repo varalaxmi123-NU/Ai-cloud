@@ -17,6 +17,7 @@ import { TopologyMap } from "@/components/TopologyMap";
 import { TelemetryDrawer } from "@/components/TelemetryDrawer";
 import { ChaosConsole } from "@/components/ChaosConsole";
 import { SelfHealingModal } from "@/components/SelfHealingModal";
+import { OverviewDashboard } from "@/components/OverviewDashboard";
 import { fetchTopology, injectChaos, healService, resetCluster } from "@/lib/api";
 import { TopologyResponse, CascadeResult, ServiceNode } from "@/types/sre";
 import { CloudLog } from "@/types/logAnalyzer";
@@ -24,7 +25,7 @@ import { CloudLog } from "@/types/logAnalyzer";
 export default function CloudLogObservabilityApp() {
   // Navigation Flow: 'welcome' -> 'signin' -> 'dashboard'
   const [currentView, setCurrentView] = useState<"welcome" | "signin" | "dashboard">("welcome");
-  const [activeTab, setActiveTab] = useState<string>("logs");
+  const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [topology, setTopology] = useState<TopologyResponse | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string>("database-service");
   const [cascadeResult, setCascadeResult] = useState<CascadeResult | null>(null);
@@ -217,10 +218,25 @@ export default function CloudLogObservabilityApp() {
 
       {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-        {/* Executive KPI Stat Strip */}
-        <WelcomeHeader
-          noiseReductionPct={91.2}
-        />
+        {/* Tab 0: Overview Observability Dashboard */}
+        {activeTab === "dashboard" && (
+          <div className="space-y-6 animate-fadeIn">
+            <OverviewDashboard
+              topology={topology}
+              onNavigateTab={(tab) => setActiveTab(tab)}
+              onSelectService={(id) => setSelectedServiceId(id)}
+              onInjectChaos={handleInjectChaos}
+              onReset={handleReset}
+            />
+          </div>
+        )}
+
+        {/* Executive KPI Stat Strip for specific feature tabs */}
+        {activeTab !== "dashboard" && (
+          <WelcomeHeader
+            noiseReductionPct={91.2}
+          />
+        )}
 
         {/* Tab 1: Real-Time Log Monitoring, File Uploader & Statistical Anomaly Stream */}
         {activeTab === "logs" && (

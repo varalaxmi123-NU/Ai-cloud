@@ -21,7 +21,8 @@ import {
   Menu,
   X,
   BrainCircuit,
-  History
+  History,
+  LayoutDashboard
 } from "lucide-react";
 import { TopologyResponse } from "@/types/sre";
 
@@ -62,6 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isWarning = systemStatus === "ELEVATED_CASCADE_WARNING";
 
   const NAV_ITEMS = [
+    { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
     { id: "logs", label: "Logs & Analyzer", icon: <Activity className="w-4 h-4" /> },
     { id: "investigator", label: "AI Investigator", icon: <BrainCircuit className="w-4 h-4" /> },
     { id: "replay", label: "Failure Replay", icon: <History className="w-4 h-4" /> },
