@@ -6,7 +6,6 @@ import { TopologyMap } from "@/components/TopologyMap";
 import { TelemetryDrawer } from "@/components/TelemetryDrawer";
 import { ChaosConsole } from "@/components/ChaosConsole";
 import { SelfHealingModal } from "@/components/SelfHealingModal";
-import { PresentationGuide } from "@/components/PresentationGuide";
 import { fetchTopology, injectChaos, healService, resetCluster } from "@/lib/api";
 import { TopologyResponse, CascadeResult, ServiceNode } from "@/types/sre";
 
@@ -16,7 +15,6 @@ export default function SREDashboard() {
   const [cascadeResult, setCascadeResult] = useState<CascadeResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
-  const [isPitchGuideOpen, setIsPitchGuideOpen] = useState<boolean>(false);
   const [healModalData, setHealModalData] = useState<{
     isOpen: boolean;
     serviceId: string;
@@ -146,7 +144,6 @@ export default function SREDashboard() {
       <Navbar
         topology={topology}
         onReset={handleReset}
-        onOpenPresentationGuide={() => setIsPitchGuideOpen(true)}
         audioEnabled={audioEnabled}
         onToggleAudio={() => setAudioEnabled(!audioEnabled)}
       />
@@ -192,12 +189,6 @@ export default function SREDashboard() {
         actionId={healModalData.actionId}
         terminalLogs={healModalData.terminalLogs}
         executionTimeMs={healModalData.executionTimeMs}
-      />
-
-      {/* Competition Presentation Pitch Deck Modal */}
-      <PresentationGuide
-        isOpen={isPitchGuideOpen}
-        onClose={() => setIsPitchGuideOpen(false)}
       />
 
       {/* Subtle Footer */}

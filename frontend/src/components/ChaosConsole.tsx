@@ -35,7 +35,7 @@ const CHAOS_PRESETS = [
     desc: "Postgres write-master hits connection pool saturation (200/200). Latency spikes to 3,840ms.",
     scenario: "database_connection_pool_exhaustion",
     severity: "CRITICAL",
-    badge: "Killer Demo (Recommended)",
+    badge: "Tier-0 Critical",
   },
   {
     serviceId: "auth-service",

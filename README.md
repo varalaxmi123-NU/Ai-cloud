@@ -1,70 +1,95 @@
 # ApexSRE: Autonomous Microservice Chaos & Cascade Predictor
 
-> **The Pitch:** An AI-driven observability dashboard that predicts cascading service failures before they happen, visualizes service dependencies in real-time, and provides one-click automated self-healing scripts.
+An AI-driven observability and resilience engineering platform that models microservice dependency graphs, predicts multi-hop cascading service failures before they manifest, detects anomalies using machine learning, and executes automated self-healing playbooks.
 
 ---
 
-## 🏆 Presentation & Live Stage Pitch Walkthrough
+## 📌 Overview
 
-### 1. The Opening Hook
-> *"Judges, when one microservice crashes at 2 AM, it usually takes down the whole platform before engineers even wake up. Today, modern microservice architectures have dozens of hidden cyclic dependencies. Meet **ApexSRE** — the autonomous microservice chaos & cascade predictor."*
+In modern distributed microservice architectures, an isolated failure in a single downstream dependency (such as database connection exhaustion or cache evictions) often triggers catastrophic cascade outages across callers. 
 
-### 2. The 4-Step Killer Feature Demo
-1. **Show Baseline Topology:** Point to the 8 connected microservices arranged in logical tiers (Edge Ingress, Core Identity, Business Payment, and Data Persistence) with live traffic particle flows and Scikit-learn anomaly scores at normal (2.4%).
-2. **Inject Chaos:** Under the bottom Chaos Studio, select *Database Connection Pool Outage* and click **"⚡ INJECT CHAOS / KILL NODE"**. Watch the dependency graph turn glowing crimson and edge traffic transform into high-frequency warning pulses.
-3. **Show NetworkX Cascade Propagation:** Show how NetworkX calculated the multi-hop failure propagation in 0.12 seconds:
-   - **T+0s:** Database Connection Pool Exhaustion (Direct Outage, 99.8% risk)
-   - **T+3s:** Payment & User Profile connection starvation (88.5% risk)
-   - **T+7s:** Ingress API Gateway 504 Gateway Timeouts (94.2% risk)
-   - **Blast Radius:** $13,700/min estimated revenue loss, 24,200 req/s affected.
-4. **Trigger Autonomous Self-Healing:** In the AI Playbooks tab, click **"⚡ EXECUTE AUTONOMOUS SELF-HEALING"**. A live terminal execution modal streams Kubernetes and Istio failover commands, isolates the failing node, promotes the replica, displays confetti, and restores all 8 services to pristine green in 1.2s!
+**ApexSRE** combines **directed graph theory (NetworkX)** and **unsupervised machine learning (Scikit-Learn IsolationForest)** with an interactive **Next.js Observability Command Center** to:
+1. **Visualize Real-Time Dependencies:** Interactive topology map showing service call volumes, latency, error rates, and traffic flows.
+2. **Simulate Chaos Scenarios:** Inject targeted failure signatures (thread pool saturation, cache-stampedes, database timeouts) into specific microservice nodes.
+3. **Predict Cascading Failure Paths:** Pre-compute multi-hop degradation timelines (`T+0s`, `T+3s`, `T+7s`, `T+14s`), fleet blast radius percentages, and business impact.
+4. **Execute Autonomous Remediation:** Execute automated SRE runbooks (read-replica promotion, Envoy circuit breakers, adaptive traffic shedding) with live terminal execution logging.
 
 ---
 
-## 🛠️ Complete Tech Stack Architecture
+## 🏗️ System Architecture
 
-### Frontend (`/frontend`)
-- **Framework:** Next.js 16 (App Router) + TypeScript + Tailwind CSS
-- **Design System:** Deep charcoal/cyber dark mode, glassmorphism panels, glowing neon accents, and smooth micro-animations
-- **Interactive Topology Canvas:** Dynamic SVG DAG with curved Bezier dependencies, flowing traffic particles, and live status rings
-- **Telemetry Charts:** Real-time SVG sparkline time-series curves for latency, CPU, memory, and 5xx error spikes
-- **UI Components & Icons:** Lucide React icons, Web Audio API sound alerts, and Canvas Confetti celebration
+### 1. Backend AI & Simulation Engine (`/backend`)
+- **FastAPI (Python 3.14):** High-throughput asynchronous REST API providing real-time telemetry streaming and chaos orchestration.
+- **NetworkX Graph Traversal:** Models 8 microservices as a directed acyclic graph (DAG). Uses reverse graph traversal and centrality metrics to compute downstream failure paths and probability scores.
+- **Scikit-Learn IsolationForest:** Multi-dimensional anomaly detection evaluating latency, 5xx error distribution, CPU utilization, and memory pressure against baseline envelopes.
+- **Pydantic v2:** Type-safe request and response schemas for all endpoints.
 
-### Backend (`/backend`)
-- **API Framework:** FastAPI (Python 3.14) + Uvicorn
-- **AI & Anomaly Engine:** Scikit-learn `IsolationForest` ensemble model trained on multi-dimensional telemetry signatures
-- **Network Simulation Engine:** NetworkX directed graph analysis for multi-hop failure propagation and bottleneck centrality
-- **Data Schemas:** Pydantic v2 validation models
+### 2. Frontend Observability Command Center (`/frontend`)
+- **Next.js 16 (App Router) + TypeScript + Tailwind CSS:** Fast, responsive enterprise dark-mode UI with glassmorphism panels.
+- **Interactive SVG Topology Mesh:** Renders node cards, health rings, and animated particle data flows along Bezier connector wires.
+- **Telemetry Drawer:** Time-series SVG sparklines for latency, CPU/memory pressure, and 5xx error spikes alongside live container logs.
+- **Chaos Console:** Scenario selector, cascade risk visualizer, and autonomous playbook executor.
+- **Self-Healing Terminal Modal:** Step-by-step terminal execution log stream with remediation verification.
+
+---
+
+## 🌐 Microservice Fleet Model
+
+The default environment models 8 critical enterprise microservices:
+
+| Service | Tier | Technology | Criticality |
+| :--- | :--- | :--- | :--- |
+| **API Gateway** | Edge Ingress | Envoy / Go Proxy | Tier-0 (Catastrophic) |
+| **Auth & Identity** | Core | Rust / Axum (OAuth2) | Tier-1 (High) |
+| **User Profile Service** | Core | Node.js / Express | Tier-2 (Medium) |
+| **Payment & Checkout Core** | Business | Java 21 / Spring Boot | Tier-0 (Catastrophic) |
+| **Inventory & Stock Engine** | Business | Go 1.22 | Tier-2 (Medium) |
+| **PostgreSQL Primary Cluster** | Persistence | PostgreSQL 16 HA Cluster | Tier-0 (Core Infrastructure) |
+| **Redis Distributed Cache** | Persistence | Redis 7.2 Cluster | Tier-1 (High) |
+| **Kafka & Notification Engine** | Async | Apache Kafka + Python Worker | Tier-3 (Low/Degradable) |
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### Option 1: Double-Click Launcher
-Run `start.bat` in the project root to automatically launch both the backend and frontend.
+### Prerequisites
+- Python 3.10+ (FastAPI, NetworkX, Scikit-learn)
+- Node.js 18+ and npm
 
-### Option 2: Manual Terminal Execution
+### 1. Launch Using Script (Windows)
+Double-click `start.bat` in the project root to start both backend and frontend automatically.
 
-#### 1. Start the FastAPI Backend
+### 2. Manual Startup
+
+#### Step A: Start the FastAPI Backend
 ```bash
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
-- API Documentation: `http://localhost:8000/docs`
-- Topology Endpoint: `http://localhost:8000/api/topology`
+- API Health: `http://localhost:8000`
+- Interactive OpenAPI Docs: `http://localhost:8000/docs`
 
-#### 2. Start the Next.js Frontend
+#### Step B: Start the Next.js Frontend
 ```bash
 cd frontend
 npm run dev -- -p 3000
 ```
-- Dashboard URL: `http://localhost:3000`
+- Dashboard: `http://localhost:3000`
 
 ---
 
 ## 📡 API Reference
 
-- `GET /api/topology`: Returns all 8 microservices, dependency edges, live health scores, and centrality metrics.
-- `POST /api/simulate-failure`: Accepts target service ID and scenario type; calculates NetworkX cascade paths, blast radius, and AI recovery playbooks.
-- `POST /api/heal`: Accepts target service and playbook ID; executes simulated automated remediation runbooks and restores cluster health.
-- `GET /api/telemetry/{service_id}`: Returns real-time CPU, memory, latency, and simulated raw container logs.
-- `POST /api/reset`: Resets all nodes to clean green baseline.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/topology` | Returns current cluster status, all nodes, dependency edges, and graph centrality metrics. |
+| `POST` | `/api/simulate-failure` | Accepts `service_id` and `scenario_type`; computes NetworkX cascade paths, blast radius, and AI recovery playbooks. |
+| `POST` | `/api/heal` | Accepts `service_id` and `action_id`; executes automated remediation runbook steps and restores cluster health. |
+| `GET` | `/api/telemetry/{service_id}` | Returns real-time time-series telemetry and simulated container log stream. |
+| `POST` | `/api/reset` | Resets all cluster nodes to normal baseline operation. |
+| `GET` | `/api/incidents` | Returns incident audit log and historical remediation records. |
+
+---
+
+## 🛡️ License
+
+MIT License. Open-source site reliability engineering and microservices chaos prediction toolkit.

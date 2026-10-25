@@ -41,7 +41,7 @@ export const SelfHealingModal: React.FC<SelfHealingModalProps> = ({
       return;
     }
 
-    // Sequentially reveal terminal logs for dramatic hackathon demonstration effect
+    // Sequentially reveal terminal logs for simulated execution stream
     let current = 0;
     const interval = setInterval(() => {
       current++;

@@ -19,7 +19,6 @@ import { TopologyResponse } from "@/types/sre";
 interface NavbarProps {
   topology: TopologyResponse | null;
   onReset: () => void;
-  onOpenPresentationGuide: () => void;
   audioEnabled: boolean;
   onToggleAudio: () => void;
 }
@@ -27,7 +26,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   topology,
   onReset,
-  onOpenPresentationGuide,
   audioEnabled,
   onToggleAudio,
 }) => {
@@ -163,15 +161,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
             <span className="hidden sm:inline">Reset Baseline</span>
-          </button>
-
-          {/* Judge / Competition Script Button */}
-          <button
-            onClick={onOpenPresentationGuide}
-            className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-md shadow-cyan-600/30 transition-all hover:scale-[1.02]"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-            <span>Judge Demo Pitch</span>
           </button>
         </div>
       </div>
