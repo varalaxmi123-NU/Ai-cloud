@@ -3,18 +3,16 @@
 import React from "react";
 import {
   Activity,
-  ShieldCheck,
-  Zap,
   Search,
-  GitBranch,
   Layers,
+  GitBranch,
   AlertOctagon,
-  Sparkles,
+  Cpu,
+  BarChart3,
   TrendingDown,
   Clock,
-  CheckCircle2,
-  Cpu,
-  BarChart3
+  Sparkles,
+  CheckCircle2
 } from "lucide-react";
 
 interface WelcomeHeaderProps {
@@ -31,139 +29,161 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({
   noiseReductionPct = 91.2,
 }) => {
   return (
-    <div className="w-full space-y-4">
-      {/* Executive Welcome Hero Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-[#091224] via-[#0b162c] to-[#070b14] p-6 shadow-2xl backdrop-blur-xl">
-        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-8 w-48 h-48 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-cyan-950 text-cyan-300 border border-cyan-700/60 flex items-center gap-1.5 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                <span>Next-Gen Observability Suite</span>
-              </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-700/40">
-                PROD CLUSTER v2.4
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-              AI-Powered Cloud Log Analyzer{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-sky-300">
-                & Alert System
-              </span>
-            </h1>
-
-            <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Autonomous real-time log ingestion, statistical anomaly detection, AI-assisted root-cause diagnosis,
-              intelligent alert correlation, and deployment regression prevention across distributed microservices.
-            </p>
+    <div className="w-full space-y-5">
+      {/* 4 Sleek High-Contrast KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Noise Reduction */}
+        <div className="p-4 rounded-2xl bg-[#111827] border border-slate-800 shadow-md flex items-center justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-300 tracking-wide uppercase block">
+              Noise Reduction
+            </span>
+            <span className="text-2xl font-black text-white mt-0.5 block">
+              {noiseReductionPct}%
+            </span>
+            <span className="text-xs text-emerald-400 font-medium flex items-center gap-1 mt-1">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>142 alerts grouped to 3</span>
+            </span>
           </div>
+          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+            <Layers className="w-6 h-6" />
+          </div>
+        </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full md:w-auto">
-            <div className="flex-1 sm:flex-initial p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center min-w-[110px]">
-              <span className="text-[10px] font-mono text-slate-400 uppercase block">NOISE REDUCTION</span>
-              <span className="text-lg font-mono font-black text-cyan-300">
-                {noiseReductionPct}%
+        {/* Card 2: Canary Deployment Health */}
+        <div className="p-4 rounded-2xl bg-[#111827] border border-slate-800 shadow-md flex items-center justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-300 tracking-wide uppercase block">
+              Canary Release
+            </span>
+            <span className="text-2xl font-black text-amber-300 mt-0.5 block flex items-center gap-2">
+              <span>v2.4.2</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                20% Traffic
               </span>
-              <span className="text-[10px] text-slate-500 font-mono block">Deduplicated</span>
-            </div>
+            </span>
+            <span className="text-xs text-rose-400 font-medium mt-1 block font-mono">
+              +4.8% Regression Spike
+            </span>
+          </div>
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+            <GitBranch className="w-6 h-6" />
+          </div>
+        </div>
 
-            <div className="flex-1 sm:flex-initial p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center min-w-[110px]">
-              <span className="text-[10px] font-mono text-slate-400 uppercase block">CANARY STATUS</span>
-              <span className="text-lg font-mono font-black text-amber-400 flex items-center justify-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <span>v2.4.2</span>
+        {/* Card 3: Active Incident Priority */}
+        <div className="p-4 rounded-2xl bg-[#111827] border border-red-500/30 shadow-md flex items-center justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-300 tracking-wide uppercase block">
+              Active Priority
+            </span>
+            <span className="text-2xl font-black text-white mt-0.5 block flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded bg-red-600 text-white text-sm font-bold animate-pulse">
+                P1
               </span>
-              <span className="text-[10px] text-red-400 font-mono block">+4.8% Err Delta</span>
-            </div>
+              <span>Critical</span>
+            </span>
+            <span className="text-xs text-red-400 font-medium mt-1 block">
+              DB Connection Saturation
+            </span>
+          </div>
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400">
+            <AlertOctagon className="w-6 h-6 animate-bounce" />
+          </div>
+        </div>
 
-            <div className="flex-1 sm:flex-initial p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center min-w-[110px]">
-              <span className="text-[10px] font-mono text-slate-400 uppercase block">ACTIVE INCIDENTS</span>
-              <span className="text-lg font-mono font-black text-red-400">
-                1 Critical
-              </span>
-              <span className="text-[10px] text-slate-500 font-mono block">P1 Escalation</span>
-            </div>
+        {/* Card 4: Ingested Log Throughput */}
+        <div className="p-4 rounded-2xl bg-[#111827] border border-slate-800 shadow-md flex items-center justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-300 tracking-wide uppercase block">
+              Stream Ingestion
+            </span>
+            <span className="text-2xl font-black text-white mt-0.5 block">
+              88.6k <span className="text-sm font-normal text-slate-400">events/s</span>
+            </span>
+            <span className="text-xs text-cyan-400 font-medium mt-1 block font-mono">
+              p99 Latency: 14.2ms
+            </span>
+          </div>
+          <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
+            <BarChart3 className="w-6 h-6" />
           </div>
         </div>
       </div>
 
-      {/* Feature Navigation Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none">
+      {/* Feature Segmented Tab Navigation Bar */}
+      <div className="p-1.5 rounded-2xl bg-[#111827] border border-slate-800 shadow-lg flex items-center gap-1.5 overflow-x-auto scrollbar-none">
         <button
           onClick={() => onSelectTab("logs")}
-          className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-[200px] py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === "logs"
-              ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-950/40"
-              : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+              ? "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md shadow-cyan-600/30"
+              : "text-slate-300 hover:text-white hover:bg-slate-800/60"
           }`}
         >
-          <Activity className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Real-Time Logs & Anomaly Detection</span>
+          <Activity className="w-4 h-4 text-cyan-300" />
+          <span>Real-Time Logs &amp; Anomaly</span>
         </button>
 
         <button
           onClick={() => onSelectTab("nlp-search")}
-          className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-[190px] py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === "nlp-search"
-              ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/60 shadow-lg shadow-indigo-950/40"
-              : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+              ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/30"
+              : "text-slate-300 hover:text-white hover:bg-slate-800/60"
           }`}
         >
-          <Search className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Natural-Language Log Search</span>
+          <Search className="w-4 h-4 text-indigo-300" />
+          <span>NLP Log Search</span>
         </button>
 
         <button
           onClick={() => onSelectTab("correlation")}
-          className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-[190px] py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === "correlation"
-              ? "bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-lg shadow-amber-950/40"
-              : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+              ? "bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-600/30"
+              : "text-slate-300 hover:text-white hover:bg-slate-800/60"
           }`}
         >
-          <Layers className="w-3.5 h-3.5 text-amber-400" />
-          <span>Alert Correlation (Noise Reduction)</span>
+          <Layers className="w-4 h-4 text-amber-300" />
+          <span>Alert Correlation (91%)</span>
         </button>
 
         <button
           onClick={() => onSelectTab("regression")}
-          className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-[200px] py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === "regression"
-              ? "bg-rose-500/20 text-rose-300 border-rose-500/60 shadow-lg shadow-rose-950/40"
-              : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+              ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30"
+              : "text-slate-300 hover:text-white hover:bg-slate-800/60"
           }`}
         >
-          <GitBranch className="w-3.5 h-3.5 text-rose-400" />
-          <span>Deployment Regression Detection</span>
+          <GitBranch className="w-4 h-4 text-rose-300" />
+          <span>Deployment Regression</span>
         </button>
 
         <button
           onClick={() => onSelectTab("priority")}
-          className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-[190px] py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === "priority"
-              ? "bg-purple-500/20 text-purple-300 border-purple-500/60 shadow-lg shadow-purple-950/40"
-              : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30"
+              : "text-slate-300 hover:text-white hover:bg-slate-800/60"
           }`}
         >
-          <AlertOctagon className="w-3.5 h-3.5 text-purple-400" />
-          <span>Incident Impact & Priority Scoring</span>
+          <AlertOctagon className="w-4 h-4 text-purple-300" />
+          <span>Impact Priority Matrix</span>
         </button>
 
         <button
           onClick={() => onSelectTab("topology")}
-          className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-[190px] py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === "topology"
-              ? "bg-blue-500/20 text-blue-300 border-blue-500/60 shadow-lg shadow-blue-950/40"
-              : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+              ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-600/30"
+              : "text-slate-300 hover:text-white hover:bg-slate-800/60"
           }`}
         >
-          <Cpu className="w-3.5 h-3.5 text-blue-400" />
-          <span>Microservice Topology & Chaos Predictor</span>
+          <Cpu className="w-4 h-4 text-cyan-300" />
+          <span>Microservice Mesh &amp; Chaos</span>
         </button>
       </div>
     </div>

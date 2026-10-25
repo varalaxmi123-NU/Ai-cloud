@@ -13,12 +13,12 @@ import {
   Sparkles,
   ArrowRight,
   Terminal,
-  RefreshCw,
-  Zap,
   Play,
-  Pause
+  Pause,
+  X,
+  Cpu
 } from "lucide-react";
-import { CloudLog, LogSeverity, NLPQueryParsed } from "@/types/logAnalyzer";
+import { CloudLog, LogSeverity } from "@/types/logAnalyzer";
 import { getLogs, executeNLPFilter } from "@/lib/logGenerator";
 
 interface LogStreamViewerProps {
@@ -51,7 +51,7 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
   const [zScoreSensitivity, setZScoreSensitivity] = useState<number>(2.5);
   const [showConfig, setShowConfig] = useState<boolean>(false);
 
-  // Load and periodically refresh logs
+  // Refresh logs
   const refreshLogs = () => {
     if (nlpQuery.trim()) {
       const { parsed, logs: filteredLogs } = executeNLPFilter(nlpQuery);
@@ -99,58 +99,73 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
     setLogs(baseLogs);
   };
 
-  // Calculate current statistical error rate
+  // Statistical calculations
   const errorCount = logs.filter((l) => l.level === "ERROR" || l.level === "CRITICAL").length;
   const currentErrorRate = logs.length > 0 ? Number(((errorCount / logs.length) * 100).toFixed(1)) : 0;
   const isAnomalySpike = currentErrorRate > errorRateThresholdPct;
 
   return (
-    <div className="w-full space-y-4 rounded-2xl border border-slate-800/80 bg-[#070b14]/95 backdrop-blur-xl p-5 shadow-2xl">
+    <div className="w-full space-y-4 rounded-2xl bg-[#0f172a] border border-slate-800 p-6 shadow-xl">
       {/* Top Header & Search Bar */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40">
-              <Activity className="w-5 h-5 animate-pulse" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+              <Activity className="w-6 h-6 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <span>Real-Time Log Ingestion & Anomaly Stream</span>
+              <div className="flex items-center gap-2.5">
+                <h2 className="text-lg font-bold text-white tracking-tight">
+                  Real-Time Log Ingestion &amp; Anomaly Detection
+                </h2>
                 {isAnomalySpike && (
-                  <span className="px-2 py-0.5 rounded-full bg-red-950 text-red-300 border border-red-600/60 text-[10px] font-mono animate-pulse">
-                    STATISTICAL ANOMALY SURGE
+                  <span className="px-2.5 py-0.5 rounded-full bg-red-600 text-white font-mono text-xs font-bold animate-pulse shadow-md shadow-red-900/50">
+                    ANOMALY SURGE DETECTED
                   </span>
                 )}
-              </h2>
-              <p className="text-xs text-slate-400 font-mono">
-                Ingesting {logs.length} telemetry events • Error rate: <b className={isAnomalySpike ? "text-red-400" : "text-emerald-400"}>{currentErrorRate}%</b> (Threshold: {errorRateThresholdPct}%)
+              </div>
+              <p className="text-xs text-slate-300 font-medium mt-0.5">
+                Ingesting live events • Current Error Rate:{" "}
+                <b className={`font-bold ${isAnomalySpike ? "text-red-400" : "text-emerald-400"}`}>
+                  {currentErrorRate}%
+                </b>{" "}
+                (Threshold: {errorRateThresholdPct}%) • p99 Threshold: {latencyThresholdMs}ms
               </p>
             </div>
           </div>
 
-          {/* Controls: Stream Toggle & Threshold Config */}
-          <div className="flex items-center gap-2 text-xs">
+          {/* Action buttons */}
+          <div className="flex items-center gap-2.5 text-xs font-semibold">
             <button
               onClick={() => setIsStreaming(!isStreaming)}
-              className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 transition-colors font-semibold ${
+              className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
                 isStreaming
-                  ? "bg-emerald-950/60 border-emerald-500/50 text-emerald-300"
-                  : "bg-slate-900 border-slate-800 text-slate-400"
+                  ? "bg-emerald-950/80 border-emerald-500/60 text-emerald-300 hover:bg-emerald-900/60 shadow-sm"
+                  : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
               }`}
             >
-              {isStreaming ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isStreaming ? "Stream: LIVE" : "Stream: PAUSED"}</span>
+              {isStreaming ? (
+                <>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span>Stream: LIVE</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5" />
+                  <span>Stream: PAUSED</span>
+                </>
+              )}
             </button>
 
             <button
               onClick={() => setShowConfig(!showConfig)}
-              className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 transition-colors font-semibold ${
+              className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
                 showConfig
-                  ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-300"
-                  : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"
+                  ? "bg-cyan-500/20 border-cyan-500 text-cyan-200"
+                  : "bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white"
               }`}
             >
-              <Sliders className="w-3.5 h-3.5" />
+              <Sliders className="w-4 h-4 text-cyan-400" />
               <span>Statistical Thresholds</span>
             </button>
           </div>
@@ -159,27 +174,27 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
         {/* Feature 5: Natural Language Search Form */}
         <form onSubmit={handleNLPSearch} className="relative">
           <div className="relative flex items-center">
-            <Search className="absolute left-3.5 w-4 h-4 text-cyan-400 pointer-events-none" />
+            <Search className="absolute left-4 w-5 h-5 text-cyan-400 pointer-events-none" />
             <input
               type="text"
               value={nlpQuery}
               onChange={(e) => setNlpQuery(e.target.value)}
-              placeholder="Natural Language Search (e.g. 'Show database errors from the last 30 minutes' or 'Find 504 timeouts on payment')"
-              className="w-full pl-10 pr-24 py-2.5 rounded-xl bg-slate-950/90 border border-slate-800 focus:border-cyan-500/70 focus:ring-1 focus:ring-cyan-500/50 text-xs text-slate-100 placeholder-slate-500 outline-none transition-all font-mono"
+              placeholder="Search logs in plain English (e.g., 'Show database errors from the last 30 minutes' or 'Find 504 timeouts on payment')"
+              className="w-full pl-12 pr-32 py-3 rounded-xl bg-[#1e293b] border border-slate-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/30 text-sm text-white placeholder-slate-400 outline-none transition-all shadow-inner font-medium"
             />
-            <div className="absolute right-2 flex items-center gap-1.5">
+            <div className="absolute right-2.5 flex items-center gap-2">
               {nlpQuery && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="px-2 py-1 rounded text-[10px] text-slate-400 hover:text-white"
+                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                 >
-                  Clear
+                  <X className="w-4 h-4" />
                 </button>
               )}
               <button
                 type="submit"
-                className="px-3 py-1 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs transition-all shadow-sm"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs transition-all shadow-md shadow-cyan-600/30 cursor-pointer"
               >
                 Search NLP
               </button>
@@ -187,23 +202,26 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
           </div>
         </form>
 
-        {/* Active NLP Validated Filter Badge */}
+        {/* Active Filter Badge */}
         {activeFilterExplanation && (
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-indigo-950/40 border border-indigo-500/40 text-xs font-mono">
-            <div className="flex items-center gap-2 text-indigo-300">
+          <div className="flex items-center justify-between p-3 rounded-xl bg-indigo-950/70 border border-indigo-500/50 text-xs font-mono text-indigo-200 shadow-sm">
+            <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-indigo-400" />
-              <span>{activeFilterExplanation}</span>
+              <span className="font-semibold">{activeFilterExplanation}</span>
             </div>
-            <span className="text-[10px] text-slate-400">
-              {logs.length} logs matched
-            </span>
+            <button
+              onClick={handleClearSearch}
+              className="text-[11px] text-indigo-300 hover:text-white underline cursor-pointer"
+            >
+              Reset to Full Stream ({logs.length} matched)
+            </button>
           </div>
         )}
 
         {/* Prompt Suggestions */}
         {!nlpQuery && (
-          <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
-            <span className="text-slate-500 text-[10px]">Try Prompts:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <span className="text-xs font-semibold text-slate-400">Sample NLP Prompts:</span>
             {SAMPLE_NLP_QUERIES.map((query, idx) => (
               <button
                 key={idx}
@@ -214,7 +232,7 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
                   setLogs(filteredLogs);
                   setActiveFilterExplanation(parsed.explanation);
                 }}
-                className="px-2 py-0.5 rounded-lg bg-slate-900/80 border border-slate-800/80 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-300 transition-colors"
+                className="px-3 py-1 rounded-lg bg-[#1e293b] border border-slate-700 hover:border-cyan-400 text-xs text-slate-200 hover:text-cyan-300 transition-all cursor-pointer font-medium"
               >
                 &ldquo;{query}&rdquo;
               </button>
@@ -224,11 +242,11 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
 
         {/* Configurable Statistical Thresholds Drawer (Feature 1) */}
         {showConfig && (
-          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono animate-fadeIn">
+          <div className="p-5 rounded-xl bg-[#1e293b] border border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs animate-fadeIn">
             <div>
-              <div className="flex justify-between mb-1.5 text-slate-400">
-                <span>Latency Threshold</span>
-                <span className="font-bold text-cyan-400">{latencyThresholdMs} ms</span>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-slate-200">Response Latency Threshold</span>
+                <span className="font-bold text-cyan-400 text-sm font-mono">{latencyThresholdMs} ms</span>
               </div>
               <input
                 type="range"
@@ -239,15 +257,15 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
                 onChange={(e) => setLatencyThresholdMs(Number(e.target.value))}
                 className="w-full accent-cyan-400 cursor-pointer"
               />
-              <span className="text-[10px] text-slate-500 mt-1 block">
-                Flags queries above {latencyThresholdMs}ms as response time anomalies.
+              <span className="text-[11px] text-slate-400 mt-1.5 block">
+                Queries exceeding {latencyThresholdMs}ms are flagged as latency anomalies.
               </span>
             </div>
 
             <div>
-              <div className="flex justify-between mb-1.5 text-slate-400">
-                <span>Error Surge Threshold</span>
-                <span className="font-bold text-red-400">{errorRateThresholdPct}%</span>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-slate-200">Error Surge Sensitivity</span>
+                <span className="font-bold text-red-400 text-sm font-mono">{errorRateThresholdPct}%</span>
               </div>
               <input
                 type="range"
@@ -258,15 +276,15 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
                 onChange={(e) => setErrorRateThresholdPct(Number(e.target.value))}
                 className="w-full accent-red-400 cursor-pointer"
               />
-              <span className="text-[10px] text-slate-500 mt-1 block">
-                Triggers incident alarms when error rate exceeds {errorRateThresholdPct}%.
+              <span className="text-[11px] text-slate-400 mt-1.5 block">
+                Triggers alarms when error proportion exceeds {errorRateThresholdPct}%.
               </span>
             </div>
 
             <div>
-              <div className="flex justify-between mb-1.5 text-slate-400">
-                <span>Z-Score Sensitivity</span>
-                <span className="font-bold text-indigo-400">{zScoreSensitivity}&sigma;</span>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-slate-200">Gaussian Z-Score Envelope</span>
+                <span className="font-bold text-indigo-400 text-sm font-mono">{zScoreSensitivity}&sigma;</span>
               </div>
               <input
                 type="range"
@@ -277,140 +295,174 @@ export const LogStreamViewer: React.FC<LogStreamViewerProps> = ({
                 onChange={(e) => setZScoreSensitivity(Number(e.target.value))}
                 className="w-full accent-indigo-400 cursor-pointer"
               />
-              <span className="text-[10px] text-slate-500 mt-1 block">
-                Statistical standard deviations from baseline before marking anomaly.
+              <span className="text-[11px] text-slate-400 mt-1.5 block">
+                Statistical standard deviations above mean before flagging an incident.
               </span>
             </div>
           </div>
         )}
 
-        {/* Traditional Quick Filters */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80 text-xs">
-          <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-400 text-[11px] font-mono">Service:</span>
+        {/* Filter Toolbar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-wide">Filter Service:</span>
             <select
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
-              className="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2 py-1 outline-none font-mono"
+              className="bg-[#1e293b] border border-slate-700 text-white font-semibold text-xs rounded-lg px-3 py-1.5 outline-none cursor-pointer focus:border-cyan-400"
             >
-              <option value="all">All Services (8)</option>
-              <option value="database-service">database-service</option>
-              <option value="payment-gateway">payment-gateway</option>
-              <option value="api-gateway">api-gateway</option>
-              <option value="auth-service">auth-service</option>
+              <option value="all">All 8 Microservices</option>
+              <option value="database-service">database-service (PostgreSQL)</option>
+              <option value="payment-gateway">payment-gateway (Stripe)</option>
+              <option value="api-gateway">api-gateway (Envoy)</option>
+              <option value="auth-service">auth-service (OAuth2)</option>
               <option value="user-service">user-service</option>
               <option value="redis-cache">redis-cache</option>
               <option value="notification-service">notification-service</option>
+              <option value="inventory-service">inventory-service</option>
             </select>
           </div>
 
-          <div className="flex items-center gap-1.5 font-mono text-[11px]">
-            {["all", "CRITICAL", "ERROR", "WARN", "INFO"].map((lvl) => (
-              <button
-                key={lvl}
-                onClick={() => setSelectedLevel(lvl)}
-                className={`px-2.5 py-1 rounded-lg border transition-colors ${
-                  selectedLevel === lvl
-                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50 font-bold"
-                    : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200"
-                }`}
-              >
-                {lvl.toUpperCase()}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-wide mr-1">Severity:</span>
+            {["all", "CRITICAL", "ERROR", "WARN", "INFO"].map((lvl) => {
+              const isActive = selectedLevel === lvl;
+              return (
+                <button
+                  key={lvl}
+                  onClick={() => setSelectedLevel(lvl)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    isActive
+                      ? lvl === "CRITICAL"
+                        ? "bg-red-600 text-white shadow-md shadow-red-600/40"
+                        : lvl === "ERROR"
+                        ? "bg-rose-600 text-white shadow-md shadow-rose-600/40"
+                        : lvl === "WARN"
+                        ? "bg-amber-600 text-white shadow-md shadow-amber-600/40"
+                        : "bg-cyan-600 text-white shadow-md shadow-cyan-600/40"
+                      : "bg-[#1e293b] text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700"
+                  }`}
+                >
+                  {lvl}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Real-Time Log Records Stream */}
-      <div className="rounded-xl bg-[#03060c] border border-slate-800/90 overflow-hidden font-mono text-xs">
-        <div className="px-4 py-2 bg-[#080d1a] border-b border-slate-800 text-slate-400 text-[11px] grid grid-cols-12 gap-2">
-          <span className="col-span-2">TIMESTAMP</span>
-          <span className="col-span-2">SERVICE</span>
-          <span className="col-span-1">LEVEL</span>
-          <span className="col-span-5">LOG MESSAGE &amp; STACK TRACE</span>
-          <span className="col-span-1 text-right">LATENCY</span>
-          <span className="col-span-1 text-right">ACTION</span>
+      {/* High-Contrast, Legible Log Stream Table */}
+      <div className="rounded-xl border border-slate-700 bg-[#0b0f19] overflow-hidden shadow-lg">
+        {/* Table Header */}
+        <div className="px-5 py-3 bg-[#1e293b] border-b border-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider flex items-center gap-4">
+          <div className="w-28 shrink-0">Timestamp</div>
+          <div className="w-40 shrink-0">Service</div>
+          <div className="w-24 shrink-0 text-center">Severity</div>
+          <div className="flex-1">Log Message &amp; Diagnostic Details</div>
+          <div className="w-24 shrink-0 text-right">Latency</div>
+          <div className="w-32 shrink-0 text-right">Root-Cause</div>
         </div>
 
-        <div className="max-h-[460px] overflow-y-auto divide-y divide-slate-900/80">
+        {/* Scrollable Rows */}
+        <div className="max-h-[520px] overflow-y-auto divide-y divide-slate-800 font-mono text-xs">
           {logs.length === 0 ? (
-            <div className="py-12 text-center text-slate-500">
-              No logs matched your natural language query or filters.
+            <div className="py-16 text-center text-slate-400 font-sans">
+              No matching log records found for current query.
             </div>
           ) : (
-            logs.map((log) => {
-              const isError = log.level === "ERROR" || log.level === "CRITICAL";
+            logs.map((log, idx) => {
+              const isCritical = log.level === "CRITICAL";
+              const isError = log.level === "ERROR";
+              const isWarn = log.level === "WARN";
               const isSlow = log.latencyMs >= latencyThresholdMs;
 
               return (
                 <div
                   key={log.id}
-                  onClick={() => isError && onSelectLogError(log)}
-                  className={`px-4 py-2.5 grid grid-cols-12 gap-2 items-start transition-colors ${
-                    isError
-                      ? "bg-red-950/20 hover:bg-red-950/40 cursor-pointer border-l-2 border-red-500"
-                      : isSlow
-                      ? "bg-amber-950/15 hover:bg-amber-950/30 border-l-2 border-amber-500"
-                      : "hover:bg-slate-900/40"
+                  onClick={() => (isError || isCritical) && onSelectLogError(log)}
+                  className={`px-5 py-3.5 flex items-center gap-4 transition-colors ${
+                    isCritical
+                      ? "bg-red-950/40 hover:bg-red-950/60 border-l-4 border-red-500 cursor-pointer"
+                      : isError
+                      ? "bg-rose-950/30 hover:bg-rose-950/50 border-l-4 border-rose-500 cursor-pointer"
+                      : isWarn
+                      ? "bg-amber-950/20 hover:bg-amber-950/40 border-l-4 border-amber-500"
+                      : idx % 2 === 0
+                      ? "bg-[#0b0f19] hover:bg-[#131d33]"
+                      : "bg-[#0f172a] hover:bg-[#131d33]"
                   }`}
                 >
-                  <span className="col-span-2 text-slate-500 text-[11px] truncate">
-                    {log.timestamp.split(" ")[1] || log.timestamp}
-                  </span>
+                  {/* Timestamp */}
+                  <div className="w-28 shrink-0 text-slate-400 font-mono text-xs">
+                    {log.timestamp.split(" ")[1] || log.timestamp} UTC
+                  </div>
 
-                  <span className="col-span-2 text-slate-300 font-semibold truncate">
-                    {log.service}
-                  </span>
+                  {/* Service Badge */}
+                  <div className="w-40 shrink-0">
+                    <span className="px-2.5 py-1 rounded-md bg-[#1e293b] text-cyan-200 border border-slate-700 font-semibold text-xs truncate block max-w-full">
+                      {log.service}
+                    </span>
+                  </div>
 
-                  <span className="col-span-1">
+                  {/* Severity Badge */}
+                  <div className="w-24 shrink-0 text-center">
                     <span
-                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                        log.level === "CRITICAL"
+                      className={`px-2.5 py-1 rounded-md text-xs font-black inline-block ${
+                        isCritical
                           ? "bg-red-600 text-white animate-pulse"
-                          : log.level === "ERROR"
-                          ? "bg-red-950 text-red-400 border border-red-800/60"
-                          : log.level === "WARN"
-                          ? "bg-amber-950 text-amber-400 border border-amber-800/60"
-                          : "bg-cyan-950 text-cyan-400 border border-cyan-800/60"
+                          : isError
+                          ? "bg-rose-600 text-white"
+                          : isWarn
+                          ? "bg-amber-500 text-slate-950"
+                          : "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
                       }`}
                     >
                       {log.level}
                     </span>
-                  </span>
+                  </div>
 
-                  <div className="col-span-5 text-slate-200 break-all leading-relaxed">
-                    <p>{log.message}</p>
+                  {/* Message & Exception Details (Crisp White Text!) */}
+                  <div className="flex-1 min-w-0 pr-2">
+                    <p className="text-white text-xs leading-relaxed font-mono font-medium break-words">
+                      {log.message}
+                    </p>
                     {log.exceptionType && (
-                      <span className="text-red-400 text-[10px] block mt-0.5">
-                        ↳ {log.exceptionType}
+                      <span className="text-rose-400 text-xs font-bold block mt-1 font-mono">
+                        ↳ Exception: {log.exceptionType}
                       </span>
                     )}
                   </div>
 
-                  <span
-                    className={`col-span-1 text-right font-mono ${
-                      isSlow ? "text-red-400 font-bold" : "text-slate-400"
-                    }`}
-                  >
-                    {log.latencyMs}ms
-                  </span>
+                  {/* Latency */}
+                  <div className="w-24 shrink-0 text-right">
+                    <span
+                      className={`text-xs font-bold font-mono px-2 py-0.5 rounded ${
+                        isSlow
+                          ? "bg-red-500/20 text-red-300 border border-red-500/50"
+                          : "text-slate-300"
+                      }`}
+                    >
+                      {log.latencyMs} ms
+                    </span>
+                  </div>
 
-                  <div className="col-span-1 text-right">
-                    {isError ? (
+                  {/* Action Button */}
+                  <div className="w-32 shrink-0 text-right">
+                    {(isError || isCritical) ? (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelectLogError(log);
                         }}
-                        className="px-2 py-0.5 rounded bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/50 text-[10px] font-bold transition-colors inline-flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold flex items-center justify-end gap-1.5 ml-auto shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
                       >
-                        <Sparkles className="w-2.5 h-2.5 text-cyan-400" />
-                        <span>AI Root-Cause</span>
+                        <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                        <span>AI Diagnose</span>
                       </button>
                     ) : (
-                      <span className="text-[10px] text-slate-600 font-mono">OK</span>
+                      <span className="text-xs text-emerald-400 font-semibold font-mono">
+                        OK
+                      </span>
                     )}
                   </div>
                 </div>

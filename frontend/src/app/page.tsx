@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { LandingWelcome } from "@/components/LandingWelcome";
+import { SignInPage } from "@/components/SignInPage";
 import { Navbar } from "@/components/Navbar";
 import { WelcomeHeader } from "@/components/WelcomeHeader";
 import { LogStreamViewer } from "@/components/LogStreamViewer";
@@ -14,15 +16,47 @@ import { ChaosConsole } from "@/components/ChaosConsole";
 import { SelfHealingModal } from "@/components/SelfHealingModal";
 import { fetchTopology, injectChaos, healService, resetCluster } from "@/lib/api";
 import { TopologyResponse, CascadeResult, ServiceNode } from "@/types/sre";
-import { CloudLog, CorrelatedIncident } from "@/types/logAnalyzer";
+import { CloudLog } from "@/types/logAnalyzer";
 
-export default function CloudLogObservabilityDashboard() {
+export default function CloudLogObservabilityApp() {
+  // Navigation Flow: 'welcome' -> 'signin' -> 'dashboard'
+  const [currentView, setCurrentView] = useState<"welcome" | "signin" | "dashboard">("welcome");
   const [activeTab, setActiveTab] = useState<string>("logs");
   const [topology, setTopology] = useState<TopologyResponse | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string>("database-service");
   const [cascadeResult, setCascadeResult] = useState<CascadeResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+
+  // Check saved session on mount
+  useEffect(() => {
+    try {
+      const savedAuth = sessionStorage.getItem("cloudlog_authenticated");
+      if (savedAuth === "true") {
+        setCurrentView("dashboard");
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleSignInSuccess = () => {
+    try {
+      sessionStorage.setItem("cloudlog_authenticated", "true");
+    } catch {
+      // ignore
+    }
+    setCurrentView("dashboard");
+  };
+
+  const handleSignOut = () => {
+    try {
+      sessionStorage.removeItem("cloudlog_authenticated");
+    } catch {
+      // ignore
+    }
+    setCurrentView("welcome");
+  };
 
   // AI Root Cause Inspector state
   const [selectedErrorLog, setSelectedErrorLog] = useState<CloudLog | null>(null);
@@ -101,10 +135,11 @@ export default function CloudLogObservabilityDashboard() {
   };
 
   useEffect(() => {
+    if (currentView !== "dashboard") return;
     refreshTopology();
     const interval = setInterval(refreshTopology, 3500);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentView]);
 
   // Handle Chaos Injection
   const handleInjectChaos = async (serviceId: string, scenario?: string) => {
@@ -154,19 +189,36 @@ export default function CloudLogObservabilityDashboard() {
     (n) => n.id === selectedServiceId
   );
 
+  // VIEW 1: Minimalist Beautiful AI Welcome Landing
+  if (currentView === "welcome") {
+    return <LandingWelcome onGetStarted={() => setCurrentView("signin")} />;
+  }
+
+  // VIEW 2: Enterprise Sign In Page
+  if (currentView === "signin") {
+    return (
+      <SignInPage
+        onSuccess={handleSignInSuccess}
+        onBackToWelcome={() => setCurrentView("welcome")}
+      />
+    );
+  }
+
+  // VIEW 3: Full High-Contrast Main SRE Dashboard
   return (
-    <div className="min-h-screen bg-[#06090e] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30">
+    <div className="min-h-screen bg-[#0b0f19] bg-ambient-mesh text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30">
       {/* Top Header Navbar */}
       <Navbar
         topology={topology}
         onReset={handleReset}
         audioEnabled={audioEnabled}
         onToggleAudio={() => setAudioEnabled(!audioEnabled)}
+        onSignOut={handleSignOut}
       />
 
       {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-        {/* Executive Welcome Hero & Tab Switcher */}
+        {/* Executive Welcome Hero & Segmented Tab Switcher */}
         <WelcomeHeader
           activeTab={activeTab}
           onSelectTab={(tab) => setActiveTab(tab)}
@@ -271,17 +323,20 @@ export default function CloudLogObservabilityDashboard() {
       />
 
       {/* Global Footer */}
-      <footer className="border-t border-slate-900 bg-[#04060a] py-3.5 px-6 text-center text-xs text-slate-500 font-mono flex flex-wrap items-center justify-between gap-3 max-w-7xl mx-auto w-full">
+      <footer className="border-t border-slate-800 bg-[#080d1a] py-4 px-6 text-center text-xs text-slate-400 font-mono flex flex-wrap items-center justify-between gap-3 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span>AI-Powered Cloud Log Analyzer &amp; Alert System v2.4</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-slate-200 font-semibold">CloudLog AI — Enterprise Cloud Observability</span>
         </div>
         <div className="flex items-center gap-4 text-slate-400">
-          <span>Statistical Anomaly Engine</span>
+          <span>Logged in as: <b className="text-cyan-300">company@gmail.com</b></span>
           <span>•</span>
-          <span>NLP Query Parser</span>
-          <span>•</span>
-          <span>Next.js Vercel Production Ready</span>
+          <button
+            onClick={handleSignOut}
+            className="hover:text-white underline cursor-pointer"
+          >
+            Sign Out
+          </button>
         </div>
       </footer>
     </div>
