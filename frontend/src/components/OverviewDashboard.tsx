@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Activity,
   Layers,
@@ -29,7 +29,6 @@ import {
   Flame
 } from "lucide-react";
 import { TopologyResponse, ServiceNode } from "@/types/sre";
-import { PRELOADED_SCENARIOS } from "@/lib/logParser";
 
 interface OverviewDashboardProps {
   topology: TopologyResponse | null;
@@ -40,130 +39,180 @@ interface OverviewDashboardProps {
   isLandingPreview?: boolean;
 }
 
-// Sample Time-Series Data for Error Rate & Ingestion Over Time
-const TIME_SERIES_DATA = [
-  { time: "09:45", requests: 74000, errorRate: 0.2, p99: 14.1, label: "Nominal traffic" },
-  { time: "09:50", requests: 78500, errorRate: 0.3, p99: 14.8, label: "Traffic rising" },
-  { time: "09:55", requests: 84200, errorRate: 0.4, p99: 15.2, label: "Peak user login" },
-  { time: "10:00", requests: 88100, errorRate: 1.2, p99: 185.0, label: "Slow queries on orders table" },
-  { time: "10:01", requests: 91400, errorRate: 3.8, p99: 410.0, label: "DB connections exhausted (84% -> 99%)" },
-  { time: "10:02", requests: 86300, errorRate: 5.6, p99: 512.0, label: "Payment gateway 504 timeouts" },
-  { time: "10:03", requests: 82100, errorRate: 4.9, p99: 480.0, label: "Website HTTP 500 error cascade" },
-  { time: "10:04", requests: 79500, errorRate: 3.2, p99: 210.0, label: "Circuit breaker opened (Envoy)" },
-  { time: "10:05", requests: 76000, errorRate: 1.1, p99: 45.0, label: "PgBouncer pool recycle started" },
-  { time: "10:06", requests: 75400, errorRate: 0.4, p99: 16.2, label: "Cluster recovering to baseline" },
-];
+// Dynamic Profile for each Time Window (15m, 1h, 6h, 24h)
+interface TimePoint {
+  time: string;
+  requests: number;
+  errorRate: number;
+  p99: number;
+  label: string;
+}
 
-const FREQUENT_ERRORS = [
-  {
-    rank: 1,
-    name: "FATAL: remaining connection slots are reserved",
-    service: "database-service",
-    count: 142,
-    pct: 44,
-    trend: "+28%",
-    isUp: true,
-    severity: "CRITICAL",
+interface FrequentErrorItem {
+  rank: number;
+  name: string;
+  service: string;
+  count: number;
+  pct: number;
+  trend: string;
+  isUp: boolean;
+  severity: "CRITICAL" | "WARN";
+}
+
+interface WindowData {
+  title: string;
+  description: string;
+  totalLogs: string;
+  logTrend: string;
+  ingestionRps: string;
+  criticalErrors: number;
+  errorRatePct: number;
+  p99LatencyMs: number;
+  latencyNote: string;
+  noiseSuppressionPct: number;
+  noiseRatioText: string;
+  peakIncidentWindow: string;
+  points: TimePoint[];
+  frequentErrors: FrequentErrorItem[];
+}
+
+const TIME_WINDOW_PROFILES: Record<"15m" | "1h" | "6h" | "24h", WindowData> = {
+  "15m": {
+    title: "Last 15 Minutes — Active Incident Surge Horizon",
+    description: "High-resolution telemetry during the PostgreSQL pool exhaustion event",
+    totalLogs: "38,420",
+    logTrend: "+34.8%",
+    ingestionRps: "94,100 req/s",
+    criticalErrors: 38,
+    errorRatePct: 5.6,
+    p99LatencyMs: 512.0,
+    latencyNote: "Peak Outage: 512ms",
+    noiseSuppressionPct: 94.2,
+    noiseRatioText: "82 alerts → 2 groups",
+    peakIncidentWindow: "Active Peak: 10:01 - 10:04 UTC",
+    points: [
+      { time: "10:00", requests: 88100, errorRate: 1.2, p99: 185.0, label: "Slow queries on orders table" },
+      { time: "10:02", requests: 91400, errorRate: 3.9, p99: 410.0, label: "DB connection pool saturation" },
+      { time: "10:04", requests: 94100, errorRate: 5.8, p99: 512.0, label: "Payment 504 gateway timeouts" },
+      { time: "10:06", requests: 89300, errorRate: 5.4, p99: 490.0, label: "Cascading HTTP 500 errors" },
+      { time: "10:08", requests: 84200, errorRate: 4.1, p99: 380.0, label: "Envoy circuit breaker active" },
+      { time: "10:10", requests: 81000, errorRate: 3.0, p99: 210.0, label: "PgBouncer pool recycle" },
+      { time: "10:12", requests: 77500, errorRate: 1.8, p99: 95.0, label: "Recovery in progress" },
+      { time: "10:15", requests: 76000, errorRate: 0.9, p99: 42.0, label: "Stabilizing towards baseline" },
+    ],
+    frequentErrors: [
+      { rank: 1, name: "FATAL: remaining connection slots are reserved", service: "database-service", count: 88, pct: 54, trend: "+45%", isUp: true, severity: "CRITICAL" },
+      { rank: 2, name: "Connection timeout (504) -> stripe.api.internal", service: "payment-gateway", count: 52, pct: 32, trend: "+36%", isUp: true, severity: "CRITICAL" },
+      { rank: 3, name: "ClientConnectionTimeoutException: socket timeout", service: "api-gateway", count: 18, pct: 11, trend: "+12%", isUp: true, severity: "WARN" },
+      { rank: 4, name: "High memory pressure (Eviction risk)", service: "redis-cache", count: 6, pct: 3, trend: "+2%", isUp: true, severity: "WARN" },
+    ],
   },
-  {
-    rank: 2,
-    name: "Connection timeout (504) -> stripe.api.internal",
-    service: "payment-gateway",
-    count: 98,
-    pct: 31,
-    trend: "+19%",
-    isUp: true,
-    severity: "CRITICAL",
+
+  "1h": {
+    title: "Last 1 Hour — Outage Surge & Auto-Mitigation",
+    description: "Full operational cycle showing baseline, surge escalation, and stabilization",
+    totalLogs: "148,920",
+    logTrend: "+14.2%",
+    ingestionRps: "88,650 req/s",
+    criticalErrors: 42,
+    errorRatePct: 4.8,
+    p99LatencyMs: 18.4,
+    latencyNote: "DB spike: 410ms",
+    noiseSuppressionPct: 91.2,
+    noiseRatioText: "142 alerts → 3 groups",
+    peakIncidentWindow: "Incident Window: 10:01 - 10:03 UTC",
+    points: [
+      { time: "09:45", requests: 74000, errorRate: 0.2, p99: 14.1, label: "Nominal baseline traffic" },
+      { time: "09:50", requests: 78500, errorRate: 0.3, p99: 14.8, label: "Traffic ascending" },
+      { time: "09:55", requests: 84200, errorRate: 0.4, p99: 15.2, label: "Peak user login load" },
+      { time: "10:00", requests: 88100, errorRate: 1.2, p99: 185.0, label: "Slow queries on orders table" },
+      { time: "10:01", requests: 91400, errorRate: 3.8, p99: 410.0, label: "DB connections exhausted (84% -> 99%)" },
+      { time: "10:02", requests: 86300, errorRate: 5.6, p99: 512.0, label: "Payment gateway 504 timeouts" },
+      { time: "10:03", requests: 82100, errorRate: 4.9, p99: 480.0, label: "Website HTTP 500 error cascade" },
+      { time: "10:04", requests: 79500, errorRate: 3.2, p99: 210.0, label: "Circuit breaker opened (Envoy)" },
+      { time: "10:05", requests: 76000, errorRate: 1.1, p99: 45.0, label: "PgBouncer pool recycle started" },
+      { time: "10:06", requests: 75400, errorRate: 0.4, p99: 16.2, label: "Cluster recovering to baseline" },
+    ],
+    frequentErrors: [
+      { rank: 1, name: "FATAL: remaining connection slots are reserved", service: "database-service", count: 142, pct: 44, trend: "+28%", isUp: true, severity: "CRITICAL" },
+      { rank: 2, name: "Connection timeout (504) -> stripe.api.internal", service: "payment-gateway", count: 98, pct: 31, trend: "+19%", isUp: true, severity: "CRITICAL" },
+      { rank: 3, name: "High memory usage (Eviction policy activated)", service: "redis-cache", count: 52, pct: 16, trend: "-4%", isUp: false, severity: "WARN" },
+      { rank: 4, name: "ClientConnectionTimeoutException: acquire socket timeout", service: "api-gateway", count: 29, pct: 9, trend: "+6%", isUp: true, severity: "WARN" },
+    ],
   },
-  {
-    rank: 3,
-    name: "High memory usage (Eviction policy activated)",
-    service: "redis-cache",
-    count: 52,
-    pct: 16,
-    trend: "-4%",
-    isUp: false,
-    severity: "WARN",
+
+  "6h": {
+    title: "Last 6 Hours — Multi-Cluster Operational Shift",
+    description: "Aggregated performance across 2 minor blips and 1 critical surge",
+    totalLogs: "892,400",
+    logTrend: "+6.8%",
+    ingestionRps: "82,400 req/s",
+    criticalErrors: 64,
+    errorRatePct: 1.6,
+    p99LatencyMs: 28.2,
+    latencyNote: "Avg cluster SLA: 28ms",
+    noiseSuppressionPct: 89.4,
+    noiseRatioText: "410 alerts → 8 groups",
+    peakIncidentWindow: "2 Resolved Blips & 1 Active Surge",
+    points: [
+      { time: "05:00", requests: 62000, errorRate: 0.2, p99: 14.0, label: "Off-peak baseline" },
+      { time: "06:00", requests: 68000, errorRate: 0.3, p99: 14.5, label: "Early shift log volume" },
+      { time: "07:00", requests: 74000, errorRate: 1.8, p99: 95.0, label: "Redis memory eviction blip (Resolved)" },
+      { time: "08:00", requests: 79000, errorRate: 0.4, p99: 15.0, label: "Cache stabilized" },
+      { time: "09:00", requests: 83000, errorRate: 0.3, p99: 15.4, label: "Morning peak traffic" },
+      { time: "10:00", requests: 91400, errorRate: 4.8, p99: 410.0, label: "DB Connection Pool Saturation" },
+      { time: "10:30", requests: 80000, errorRate: 1.2, p99: 38.0, label: "Post-incident mitigation" },
+      { time: "11:00", requests: 78000, errorRate: 0.3, p99: 16.0, label: "Nominal SLA restored" },
+    ],
+    frequentErrors: [
+      { rank: 1, name: "FATAL: remaining connection slots are reserved", service: "database-service", count: 184, pct: 38, trend: "+12%", isUp: true, severity: "CRITICAL" },
+      { rank: 2, name: "Connection timeout (504) -> stripe.api.internal", service: "payment-gateway", count: 135, pct: 28, trend: "+8%", isUp: true, severity: "CRITICAL" },
+      { rank: 3, name: "High memory usage: Redis OOM threshold 85%", service: "redis-cache", count: 104, pct: 22, trend: "-15%", isUp: false, severity: "WARN" },
+      { rank: 4, name: "ClientConnectionTimeoutException", service: "api-gateway", count: 56, pct: 12, trend: "+2%", isUp: true, severity: "WARN" },
+    ],
   },
-  {
-    rank: 4,
-    name: "ClientConnectionTimeoutException: acquire socket timeout",
-    service: "api-gateway",
-    count: 29,
-    pct: 9,
-    trend: "+6%",
-    isUp: true,
-    severity: "WARN",
+
+  "24h": {
+    title: "Last 24 Hours — Full Diurnal Production Cycle",
+    description: "Enterprise-wide SLA telemetry across 3.5M ingested logs",
+    totalLogs: "3,540,800",
+    logTrend: "+1.9%",
+    ingestionRps: "76,800 req/s",
+    criticalErrors: 112,
+    errorRatePct: 0.7,
+    p99LatencyMs: 16.4,
+    latencyNote: "99.93% SLA Uptime",
+    noiseSuppressionPct: 93.1,
+    noiseRatioText: "1,240 alerts → 14 groups",
+    peakIncidentWindow: "99.93% SLA Availability Achieved",
+    points: [
+      { time: "12:00", requests: 78000, errorRate: 0.4, p99: 16.0, label: "Midday peak traffic" },
+      { time: "15:00", requests: 82000, errorRate: 0.3, p99: 15.2, label: "Enterprise API requests" },
+      { time: "18:00", requests: 75000, errorRate: 0.2, p99: 14.8, label: "Evening transaction window" },
+      { time: "21:00", requests: 66000, errorRate: 0.2, p99: 14.0, label: "APAC crossover load" },
+      { time: "00:00", requests: 54000, errorRate: 0.1, p99: 13.5, label: "Midnight maintenance window" },
+      { time: "03:00", requests: 48000, errorRate: 0.1, p99: 13.2, label: "Lowest cluster diurnal load" },
+      { time: "06:00", requests: 62000, errorRate: 0.3, p99: 14.2, label: "European market opening" },
+      { time: "09:00", requests: 85000, errorRate: 0.5, p99: 17.0, label: "US East peak ramp-up" },
+      { time: "10:00", requests: 91400, errorRate: 4.8, p99: 410.0, label: "DB Connection Pool Saturation" },
+      { time: "11:00", requests: 79000, errorRate: 0.3, p99: 15.8, label: "Baseline restored" },
+    ],
+    frequentErrors: [
+      { rank: 1, name: "FATAL: remaining connection slots are reserved", service: "database-service", count: 245, pct: 36, trend: "+4%", isUp: true, severity: "CRITICAL" },
+      { rank: 2, name: "Connection timeout (504) -> stripe.api.internal", service: "payment-gateway", count: 182, pct: 27, trend: "+1%", isUp: true, severity: "CRITICAL" },
+      { rank: 3, name: "High memory usage: Redis OOM threshold", service: "redis-cache", count: 148, pct: 22, trend: "-8%", isUp: false, severity: "WARN" },
+      { rank: 4, name: "ClientConnectionTimeoutException", service: "api-gateway", count: 102, pct: 15, trend: "-2%", isUp: false, severity: "WARN" },
+    ],
   },
-];
+};
 
 const FALLBACK_SERVICES: Array<Partial<ServiceNode>> = [
-  {
-    id: "api-gateway",
-    name: "API Gateway",
-    tier: "edge",
-    status: "healthy",
-    latency_ms: 24,
-    error_rate: 0.02,
-    cpu_pct: 32,
-    memory_pct: 48,
-    rps: 88650,
-  },
-  {
-    id: "database-service",
-    name: "Database Service (PostgreSQL)",
-    tier: "persistence",
-    status: "warning",
-    latency_ms: 410,
-    error_rate: 4.8,
-    cpu_pct: 88,
-    memory_pct: 92,
-    rps: 34100,
-  },
-  {
-    id: "payment-gateway",
-    name: "Payment Gateway",
-    tier: "business",
-    status: "critical",
-    latency_ms: 512,
-    error_rate: 6.2,
-    cpu_pct: 74,
-    memory_pct: 65,
-    rps: 12400,
-  },
-  {
-    id: "redis-cache",
-    name: "Redis Cache Cluster",
-    tier: "persistence",
-    status: "healthy",
-    latency_ms: 4,
-    error_rate: 0.01,
-    cpu_pct: 41,
-    memory_pct: 78,
-    rps: 65000,
-  },
-  {
-    id: "auth-service",
-    name: "Auth Service (OAuth2)",
-    tier: "core",
-    status: "healthy",
-    latency_ms: 16,
-    error_rate: 0.00,
-    cpu_pct: 22,
-    memory_pct: 39,
-    rps: 42000,
-  },
-  {
-    id: "billing-worker",
-    name: "Billing Queue Worker",
-    tier: "async",
-    status: "healthy",
-    latency_ms: 85,
-    error_rate: 0.15,
-    cpu_pct: 46,
-    memory_pct: 54,
-    rps: 8200,
-  },
+  { id: "api-gateway", name: "API Gateway", tier: "edge", status: "healthy", latency_ms: 24, error_rate: 0.02, cpu_pct: 32, memory_pct: 48, rps: 88650 },
+  { id: "database-service", name: "Database Service (PostgreSQL)", tier: "persistence", status: "warning", latency_ms: 410, error_rate: 4.8, cpu_pct: 88, memory_pct: 92, rps: 34100 },
+  { id: "payment-gateway", name: "Payment Gateway", tier: "business", status: "critical", latency_ms: 512, error_rate: 6.2, cpu_pct: 74, memory_pct: 65, rps: 12400 },
+  { id: "redis-cache", name: "Redis Cache Cluster", tier: "persistence", status: "healthy", latency_ms: 4, error_rate: 0.01, cpu_pct: 41, memory_pct: 78, rps: 65000 },
+  { id: "auth-service", name: "Auth Service (OAuth2)", tier: "core", status: "healthy", latency_ms: 16, error_rate: 0.00, cpu_pct: 22, memory_pct: 39, rps: 42000 },
+  { id: "billing-worker", name: "Billing Queue Worker", tier: "async", status: "healthy", latency_ms: 85, error_rate: 0.15, cpu_pct: 46, memory_pct: 54, rps: 8200 },
 ];
 
 export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
@@ -175,8 +224,11 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   isLandingPreview = false,
 }) => {
   const [timeWindow, setTimeWindow] = useState<"15m" | "1h" | "6h" | "24h">("1h");
-  const [hoveredPoint, setHoveredPoint] = useState<typeof TIME_SERIES_DATA[0] | null>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<TimePoint | null>(null);
   const [incidentResolved, setIncidentResolved] = useState<boolean>(false);
+
+  // Active Profile based on selected time window
+  const activeProfile = TIME_WINDOW_PROFILES[timeWindow];
 
   // Active microservices list
   const services = topology?.nodes && topology.nodes.length > 0 ? topology.nodes : (FALLBACK_SERVICES as ServiceNode[]);
@@ -185,6 +237,37 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   const criticalCount = services.filter((s) => s.status === "critical").length;
   const warningCount = services.filter((s) => s.status === "warning").length;
   const healthyCount = services.filter((s) => s.status === "healthy").length;
+
+  // Dynamically compute SVG path coordinates based on activeProfile points
+  const { reqPath, reqArea, errPath, errArea, pointCoords } = useMemo(() => {
+    const pts = activeProfile.points;
+    const width = 600;
+    const height = 180;
+    const padding = 20;
+    const chartWidth = width - padding * 2;
+    const count = pts.length;
+
+    const maxReq = Math.max(...pts.map((p) => p.requests), 100000);
+    const maxErr = 6.5; // Max scale for error %
+
+    const coords = pts.map((p, i) => {
+      const cx = padding + (i / (count - 1)) * chartWidth;
+      // y for error: higher error = lower y value (towards top)
+      const cyErr = height - 20 - (p.errorRate / maxErr) * 130;
+      // y for requests: baseline near bottom
+      const cyReq = height - 15 - (p.requests / maxReq) * 45;
+      return { cx, cyErr, cyReq, point: p };
+    });
+
+    // Build SVG Path strings
+    const rPath = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.cx.toFixed(1)} ${c.cyReq.toFixed(1)}`).join(" ");
+    const rArea = `${rPath} L ${coords[coords.length - 1].cx.toFixed(1)} ${height - 10} L ${coords[0].cx.toFixed(1)} ${height - 10} Z`;
+
+    const ePath = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.cx.toFixed(1)} ${c.cyErr.toFixed(1)}`).join(" ");
+    const eArea = `${ePath} L ${coords[coords.length - 1].cx.toFixed(1)} ${height - 10} L ${coords[0].cx.toFixed(1)} ${height - 10} Z`;
+
+    return { reqPath: rPath, reqArea: rArea, errPath: ePath, errArea: eArea, pointCoords: coords };
+  }, [activeProfile]);
 
   return (
     <div className="w-full space-y-6">
@@ -206,28 +289,34 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Cluster: <span className="font-mono text-slate-200">prod-us-east-cluster</span> • 8 Active Microservices • Zero Ingestion Loss
+              <span className="text-slate-200 font-semibold">{activeProfile.title}</span> • {activeProfile.description}
             </p>
           </div>
         </div>
 
-        {/* Right Action Toolbar */}
+        {/* Right Action Toolbar with Fully Dynamic Time Selector */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Time Window Selector */}
           <div className="flex items-center bg-[#141d2e] p-1 rounded-xl border border-slate-800 text-xs font-mono">
-            {(["15m", "1h", "6h", "24h"] as const).map((win) => (
-              <button
-                key={win}
-                onClick={() => setTimeWindow(win)}
-                className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                  timeWindow === win
-                    ? "bg-sky-500 text-slate-950 font-bold shadow-sm"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                {win}
-              </button>
-            ))}
+            {(["15m", "1h", "6h", "24h"] as const).map((win) => {
+              const isSelected = timeWindow === win;
+              return (
+                <button
+                  key={win}
+                  onClick={() => {
+                    setTimeWindow(win);
+                    setHoveredPoint(null);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold ${
+                    isSelected
+                      ? "bg-sky-500 text-slate-950 shadow-md shadow-sky-500/20 scale-105"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                  }`}
+                >
+                  {win}
+                </button>
+              );
+            })}
           </div>
 
           {/* Quick Action: Upload Logs */}
@@ -263,70 +352,76 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         </div>
       </div>
 
-      {/* 2. Top Executive Metric Cards (4 KPI Cards with Sparkline Visuals) */}
+      {/* 2. Top Executive Metric Cards (Dynamically Linked to Time Window) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* KPI 1: Ingestion Velocity */}
+        {/* KPI 1: Total Logs Ingested */}
         <div className="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
           <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
-            <span>Logs Analyzed</span>
+            <span>Logs Analyzed ({timeWindow})</span>
             <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400">
               <BarChart3 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">148,920</span>
-            <span className="text-xs text-emerald-400 font-semibold flex items-center">
+            <span className="text-3xl font-black text-white font-mono">{activeProfile.totalLogs}</span>
+            <span className="text-xs text-emerald-400 font-semibold flex items-center font-mono">
               <TrendingUp className="w-3.5 h-3.5 mr-0.5" />
-              +14.2%
+              {activeProfile.logTrend}
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-slate-400 font-mono">
             <span>Ingestion Rate</span>
-            <span className="text-sky-300 font-semibold">88,650 req/s</span>
+            <span className="text-sky-300 font-semibold">{activeProfile.ingestionRps}</span>
           </div>
-          {/* Visual Mini Progress Bar */}
           <div className="mt-2 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full w-[78%]" />
+            <div className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full w-[82%]" />
           </div>
         </div>
 
-        {/* KPI 2: Error Surge Rate */}
+        {/* KPI 2: Error Rate Surge */}
         <div className="p-5 rounded-2xl bg-[#0f172a] border border-rose-500/40 shadow-xl shadow-rose-950/20 transition-all hover:border-rose-500/60">
           <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
-            <span>Critical Errors</span>
+            <span>Critical Errors ({timeWindow})</span>
             <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
               <AlertOctagon className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-rose-400 font-mono">42</span>
-            <span className="text-xs px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono font-bold">
-              Surge &gt; 3.5%
+            <span className="text-3xl font-black text-rose-400 font-mono">{activeProfile.criticalErrors}</span>
+            <span className={`text-xs px-2 py-0.5 rounded font-mono font-bold ${
+              activeProfile.errorRatePct >= 3.5
+                ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+            }`}>
+              {activeProfile.errorRatePct >= 3.5 ? "Surge > 3.5%" : "Nominal < 3.5%"}
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span>Error Rate</span>
-            <span className="text-rose-400 font-bold">4.8% of traffic</span>
+            <span>Error Velocity</span>
+            <span className="text-rose-400 font-bold">{activeProfile.errorRatePct}% of traffic</span>
           </div>
           <div className="mt-2 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full bg-rose-500 rounded-full w-[48%]" />
+            <div
+              className="h-full bg-rose-500 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(activeProfile.errorRatePct * 15, 100)}%` }}
+            />
           </div>
         </div>
 
-        {/* KPI 3: Latency SLA */}
+        {/* KPI 3: Cluster Latency p99 */}
         <div className="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
           <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
-            <span>Cluster Latency p99</span>
+            <span>Latency p99 ({timeWindow})</span>
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">18.4</span>
+            <span className="text-3xl font-black text-white font-mono">{activeProfile.p99LatencyMs}</span>
             <span className="text-xs text-slate-400 font-mono">ms</span>
-            <span className="text-xs text-amber-400 font-semibold ml-auto flex items-center">
-              DB spike: 410ms
+            <span className="text-xs text-amber-400 font-semibold ml-auto font-mono">
+              {activeProfile.latencyNote}
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-slate-400 font-mono">
@@ -334,7 +429,10 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             <span className="text-emerald-400 font-semibold">&lt; 50.0 ms</span>
           </div>
           <div className="mt-2 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full w-[36%]" />
+            <div
+              className="h-full bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min((activeProfile.p99LatencyMs / 500) * 100, 100)}%` }}
+            />
           </div>
         </div>
 
@@ -347,15 +445,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-purple-300 font-mono">91.2%</span>
-            <span className="text-xs text-emerald-400 font-semibold flex items-center">
+            <span className="text-3xl font-black text-purple-300 font-mono">{activeProfile.noiseSuppressionPct}%</span>
+            <span className="text-xs text-emerald-400 font-semibold flex items-center font-mono">
               <CheckCircle2 className="w-3.5 h-3.5 mr-0.5" />
               Optimal
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-slate-400 font-mono">
             <span>Alert Compression</span>
-            <span className="text-purple-300 font-semibold">142 alerts &rarr; 3 groups</span>
+            <span className="text-purple-300 font-semibold">{activeProfile.noiseRatioText}</span>
           </div>
           <div className="mt-2 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
             <div className="h-full bg-purple-500 rounded-full w-[91%]" />
@@ -374,11 +472,11 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
                 <h3 className="text-sm font-bold text-white tracking-wide">
-                  Error Rate &amp; Ingestion Over Time
+                  Error Rate &amp; Ingestion Over Time ({timeWindow})
                 </h3>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Timeline correlation showing sudden error surge at 10:01 AM during pool exhaustion
+                {activeProfile.description}
               </p>
             </div>
             
@@ -395,11 +493,11 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             </div>
           </div>
 
-          {/* SVG Interactive Time Series Chart */}
+          {/* SVG Interactive Time Series Chart — Dynamically Rendered */}
           <div className="relative w-full h-56 pt-2 pb-6">
             <svg
               viewBox="0 0 600 180"
-              className="w-full h-full overflow-visible"
+              className="w-full h-full overflow-visible transition-all duration-300"
               preserveAspectRatio="none"
             >
               <defs>
@@ -408,78 +506,60 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.0" />
                 </linearGradient>
                 <linearGradient id="errorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.3" />
+                  <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.35" />
                   <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
               {/* Grid Lines */}
-              <line x1="0" y1="30" x2="600" y2="30" stroke="#1e293b" strokeDasharray="3 3" />
-              <line x1="0" y1="75" x2="600" y2="75" stroke="#1e293b" strokeDasharray="3 3" />
-              <line x1="0" y1="120" x2="600" y2="120" stroke="#1e293b" strokeDasharray="3 3" />
+              <line x1="20" y1="35" x2="580" y2="35" stroke="#1e293b" strokeDasharray="3 3" />
+              <line x1="20" y1="80" x2="580" y2="80" stroke="#1e293b" strokeDasharray="3 3" />
+              <line x1="20" y1="125" x2="580" y2="125" stroke="#1e293b" strokeDasharray="3 3" />
 
               {/* Critical Error Threshold (3.5%) Reference Line */}
-              <line x1="0" y1="65" x2="600" y2="65" stroke="#f43f5e" strokeWidth="1" strokeDasharray="4 4" opacity="0.6" />
-              <text x="590" y="60" fill="#f43f5e" fontSize="9" textAnchor="end" fontFamily="monospace">
+              <line x1="20" y1="90" x2="580" y2="90" stroke="#f43f5e" strokeWidth="1" strokeDasharray="4 4" opacity="0.6" />
+              <text x="575" y="85" fill="#f43f5e" fontSize="9" textAnchor="end" fontFamily="monospace">
                 SRE Threshold (3.5%)
               </text>
 
               {/* Request Volume Area Fill */}
-              <path
-                d="M 10 140 L 70 135 L 135 130 L 200 120 L 265 110 L 330 118 L 395 125 L 460 130 L 525 135 L 590 138 L 590 170 L 10 170 Z"
-                fill="url(#reqGradient)"
-              />
-              <path
-                d="M 10 140 L 70 135 L 135 130 L 200 120 L 265 110 L 330 118 L 395 125 L 460 130 L 525 135 L 590 138"
-                fill="none"
-                stroke="#38bdf8"
-                strokeWidth="1.5"
-                opacity="0.7"
-              />
+              <path d={reqArea} fill="url(#reqGradient)" />
+              <path d={reqPath} fill="none" stroke="#38bdf8" strokeWidth="1.5" opacity="0.75" />
 
               {/* Error Rate Line & Gradient Area */}
-              <path
-                d="M 10 160 L 70 158 L 135 155 L 200 135 L 265 55 L 330 25 L 395 40 L 460 75 L 525 135 L 590 155 L 590 170 L 10 170 Z"
-                fill="url(#errorGradient)"
-              />
-              <path
-                d="M 10 160 L 70 158 L 135 155 L 200 135 L 265 55 L 330 25 L 395 40 L 460 75 L 525 135 L 590 155"
-                fill="none"
-                stroke="#f43f5e"
-                strokeWidth="2.5"
-              />
+              <path d={errArea} fill="url(#errorGradient)" />
+              <path d={errPath} fill="none" stroke="#f43f5e" strokeWidth="2.5" />
 
               {/* Interactive Data Points on Error Line */}
-              {TIME_SERIES_DATA.map((pt, idx) => {
-                const cx = 10 + idx * 64.4;
-                const cy = idx === 0 ? 160 : idx === 1 ? 158 : idx === 2 ? 155 : idx === 3 ? 135 : idx === 4 ? 55 : idx === 5 ? 25 : idx === 6 ? 40 : idx === 7 ? 75 : idx === 8 ? 135 : 155;
-                const isSpike = pt.errorRate >= 3.5;
+              {pointCoords.map((c, idx) => {
+                const isSpike = c.point.errorRate >= 3.5;
+                const isHovered = hoveredPoint?.time === c.point.time;
 
                 return (
                   <g
                     key={idx}
                     className="cursor-pointer group"
-                    onMouseEnter={() => setHoveredPoint(pt)}
+                    onMouseEnter={() => setHoveredPoint(c.point)}
                     onMouseLeave={() => setHoveredPoint(null)}
                   >
                     <circle
-                      cx={cx}
-                      cy={cy}
-                      r={isSpike ? 5 : 3.5}
+                      cx={c.cx}
+                      cy={c.cyErr}
+                      r={isHovered ? 6.5 : isSpike ? 5 : 3.5}
                       fill={isSpike ? "#f43f5e" : "#0ea5e9"}
                       stroke="#0f172a"
                       strokeWidth="2"
-                      className="transition-all hover:scale-150"
+                      className="transition-all"
                     />
                     {isSpike && (
                       <circle
-                        cx={cx}
-                        cy={cy}
+                        cx={c.cx}
+                        cy={c.cyErr}
                         r="9"
                         fill="none"
                         stroke="#f43f5e"
                         strokeWidth="1.5"
-                        opacity="0.4"
+                        opacity="0.5"
                         className="animate-ping"
                       />
                     )}
@@ -489,9 +569,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             </svg>
 
             {/* Time labels below chart */}
-            <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-2 px-2">
-              {TIME_SERIES_DATA.map((pt, i) => (
-                <span key={i} className={i % 2 === 0 ? "block" : "hidden sm:block"}>
+            <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-2 px-4">
+              {activeProfile.points.map((pt, i) => (
+                <span key={i} className={i % 2 === 0 ? "block font-semibold" : "hidden sm:block"}>
                   {pt.time}
                 </span>
               ))}
@@ -507,7 +587,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   </span>
                 </div>
                 <div className="text-slate-300">{hoveredPoint.label}</div>
-                <div className="text-[11px] text-slate-400 flex items-center justify-between">
+                <div className="text-[11px] text-slate-400 flex items-center justify-between gap-4">
                   <span>Throughput: {hoveredPoint.requests.toLocaleString()} req/s</span>
                   <span>p99: {hoveredPoint.p99}ms</span>
                 </div>
@@ -516,7 +596,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span>Peak Incident Window: <b className="text-rose-400">10:01 - 10:03 UTC</b></span>
+            <span>Peak Window: <b className="text-rose-400">{activeProfile.peakIncidentWindow}</b></span>
             <button
               onClick={() => onNavigateTab("replay")}
               className="text-sky-400 hover:text-sky-300 font-bold flex items-center gap-1 cursor-pointer transition-colors"
@@ -527,25 +607,25 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
         </div>
 
-        {/* Right: Most Frequent Errors Breakdown (5 cols) */}
+        {/* Right: Most Frequent Errors Breakdown (Dynamically linked to time window) */}
         <div className="lg:col-span-5 p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-bold text-white tracking-wide">
-                  Most Frequent Errors
+                  Most Frequent Errors ({timeWindow})
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Ranked by volume in the current evaluation window
+                  Ranked by volume in the selected {timeWindow} window
                 </p>
               </div>
               <span className="px-2.5 py-1 rounded-lg bg-[#141d2e] border border-slate-800 text-[11px] font-mono text-slate-300">
-                4 Top Signatures
+                {activeProfile.frequentErrors.length} Signatures
               </span>
             </div>
 
             <div className="space-y-3.5">
-              {FREQUENT_ERRORS.map((err) => (
+              {activeProfile.frequentErrors.map((err) => (
                 <div
                   key={err.rank}
                   className="p-3 rounded-xl bg-[#141d2e] border border-slate-800 hover:border-slate-700 transition-all space-y-2"
@@ -579,11 +659,11 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
                       <span>{err.count} occurrences</span>
-                      <span className="text-slate-300 font-bold">{err.pct}% of failures</span>
+                      <span className="text-slate-300 font-bold">{err.pct}% of failures ({err.trend})</span>
                     </div>
                     <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${
+                        className={`h-full rounded-full transition-all duration-500 ${
                           err.rank === 1
                             ? "bg-rose-500"
                             : err.rank === 2
@@ -600,7 +680,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-            <span className="text-slate-400 font-mono">Aggregated from 321 error traces</span>
+            <span className="text-slate-400 font-mono">Aggregated in {timeWindow} window</span>
             <button
               onClick={() => onNavigateTab("logs")}
               className="text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1 cursor-pointer"
@@ -647,7 +727,6 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           {services.map((svc) => {
             const isCrit = svc.status === "critical";
             const isWarn = svc.status === "warning";
-            const isNominal = !isCrit && !isWarn;
 
             return (
               <div

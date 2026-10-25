@@ -189,7 +189,14 @@ export default function CloudLogObservabilityApp() {
 
   // VIEW 1: Minimalist Beautiful AI Welcome Landing
   if (currentView === "welcome") {
-    return <LandingWelcome onGetStarted={() => setCurrentView("signin")} />;
+    return (
+      <LandingWelcome
+        onGetStarted={(targetTab) => {
+          if (targetTab) setActiveTab(targetTab);
+          setCurrentView("signin");
+        }}
+      />
+    );
   }
 
   // VIEW 2: Enterprise Sign In Page

@@ -24,30 +24,12 @@ import {
   BrainCircuit
 } from "lucide-react";
 import { EnterpriseLogo } from "@/components/EnterpriseLogo";
-import { OverviewDashboard } from "@/components/OverviewDashboard";
 
 interface LandingWelcomeProps {
-  onGetStarted: () => void;
+  onGetStarted: (initialTab?: string) => void;
 }
 
-const MOCK_TERMINAL_LOGS = [
-  { time: "07:09:26", service: "redis-cache", level: "INFO", msg: "HGET user_session:8819 hit=true [duration=12ms]" },
-  { time: "07:09:25", service: "api-gateway", level: "INFO", msg: "GET /api/v2/orders 200 OK [duration=24ms]" },
-  { time: "07:09:24", service: "database-service", level: "WARN", msg: "Connection pool utilization 84% (Threshold: 80%)" },
-  { time: "07:09:22", service: "payment-gateway", level: "ERROR", msg: "Connection timeout (504) -> stripe.api.internal [duration=512ms]" },
-  { time: "07:09:20", service: "cloudlog-engine", level: "HEAL", msg: "Correlated 42 alerts -> Incident #INC-9481 (Noise Filter: 91.2%)" },
-];
-
 export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) => {
-  const [activeLogIndex, setActiveLogIndex] = useState<number>(3);
-
-  // Dynamic log ticker in preview window
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveLogIndex((prev) => (prev + 1) % MOCK_TERMINAL_LOGS.length);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="relative min-h-screen w-full bg-[#070b14] text-white flex flex-col justify-between overflow-x-hidden selection:bg-sky-500/30">
@@ -75,7 +57,7 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
 
             {/* Sign In CTA */}
             <button
-              onClick={onGetStarted}
+              onClick={() => onGetStarted("dashboard")}
               className="text-xs font-bold px-4 py-2 rounded-xl text-white bg-sky-600 hover:bg-sky-500 transition-all cursor-pointer shadow-md shadow-sky-600/30 flex items-center gap-1.5"
             >
               <span>Sign In</span>
@@ -112,7 +94,7 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
         {/* Call to Action Button Row */}
         <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
           <button
-            onClick={onGetStarted}
+            onClick={() => onGetStarted("logs")}
             className="group px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-base tracking-wide shadow-2xl shadow-sky-500/30 transition-all hover:scale-[1.03] cursor-pointer flex items-center gap-3"
           >
             <Upload className="w-5 h-5 text-white" />
@@ -121,7 +103,7 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
           </button>
 
           <button
-            onClick={onGetStarted}
+            onClick={() => onGetStarted("logs")}
             className="px-6 py-4 rounded-2xl bg-[#0f172a] hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white font-semibold text-sm transition-all cursor-pointer flex items-center gap-2"
           >
             <Database className="w-4 h-4 text-sky-400" />
@@ -152,38 +134,150 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
           </span>
         </div>
 
-        {/* Full-Scale Live Interactive Observability Dashboard Showcase */}
-        <div className="mt-12 w-full max-w-6xl rounded-3xl border border-slate-800 bg-[#0c1220]/95 shadow-2xl shadow-black/90 p-4 sm:p-6 overflow-hidden backdrop-blur-2xl transition-all">
-          <div className="mb-4 pb-4 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2.5">
-              <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-              <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-              <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-              <span className="ml-2 font-mono text-slate-300 font-semibold">
-                CloudLog Observability Command Center • Live Interactive Preview
-              </span>
+        {/* Enterprise Architecture & Core Capabilities Showcase (Graph-Free Welcome Showcase) */}
+        <div className="mt-12 w-full max-w-5xl rounded-3xl border border-slate-800 bg-[#0c1220]/90 shadow-2xl shadow-black/80 p-6 md:p-8 backdrop-blur-xl">
+          <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
+            <span className="px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[11px] font-mono font-bold uppercase tracking-wider">
+              3-Pillar SRE Architecture
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              From Raw Logs to Autonomous Incident Resolution
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              Upload log files, discover causal error progressions, and replay failures before production outages impact users.
+            </p>
+          </div>
+
+          {/* 3 Core Architecture Pillars */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Pillar 1: Ingestion & Parser */}
+            <div className="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between group">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                  <Upload className="w-5 h-5" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white">Log Analyzer Engine</h3>
+                  <span className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-mono font-bold">
+                    Pillar 01
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                  Drag and drop <b className="text-slate-200">.log, .txt, .json, .csv</b> files or paste raw text. Instantly parses log lines and extracts:
+                </p>
+                <ul className="mt-3 space-y-1.5 text-xs text-slate-300 font-mono">
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                    <span>Critical error detection</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span>Warning threshold alerts</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+                    <span>Root cause deduction &amp; fixes</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+                <span>Multi-format</span>
+                <span className="text-sky-400 font-bold">Client-Side Parser</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono text-[11px] font-bold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Live Telemetry Connected</span>
-              </span>
-              <button
-                onClick={onGetStarted}
-                className="px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition-all shadow-md shadow-sky-600/30 flex items-center gap-1 cursor-pointer"
-              >
-                <span>Open Full App</span>
-                <ArrowRight className="w-3 h-3" />
-              </button>
+
+            {/* Pillar 2: AI Incident Investigator */}
+            <div className="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between group">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                  <BrainCircuit className="w-5 h-5" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white">AI Incident Investigator</h3>
+                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono font-bold">
+                    Pillar 02
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                  Synthesizes disconnected error logs into a single causal timeline:
+                </p>
+                <div className="mt-3 p-2.5 rounded-xl bg-[#0a0e1a] border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <span className="text-purple-400 font-bold">10:00</span>
+                    <span>DB response latency up</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <span className="text-purple-400 font-bold">10:01</span>
+                    <span>Connection pool exhausted</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <span className="text-rose-400 font-bold">10:02</span>
+                    <span>504 API requests failing</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+                <span>Confidence Gauge</span>
+                <span className="text-purple-400 font-bold">96% High Accuracy</span>
+              </div>
+            </div>
+
+            {/* Pillar 3: Failure Replay & Prevention Engine */}
+            <div className="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between group">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                  <History className="w-5 h-5" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white">Failure Replay Engine</h3>
+                  <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-mono font-bold">
+                    Pillar 03
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                  Reconstructs the failure timeline with an interactive scrubber and dynamic cascade mesh:
+                </p>
+                <ul className="mt-3 space-y-1.5 text-xs text-slate-300 font-mono">
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span>Scrubber: 1x, 2x, 5x speed</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+                    <span>4-node cascade blast radius</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                    <span>Architectural prevention guides</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+                <span>Prevention SRE</span>
+                <span className="text-emerald-400 font-bold">Zero Reoccurrence</span>
+              </div>
             </div>
           </div>
 
-          {/* Render the full interactive dashboard inside the preview frame */}
-          <OverviewDashboard
-            topology={null}
-            onNavigateTab={() => onGetStarted()}
-            isLandingPreview={true}
-          />
+          {/* Bottom Call to Action Bar */}
+          <div className="mt-8 p-4 rounded-2xl bg-gradient-to-r from-sky-950/40 via-[#0f172a] to-indigo-950/40 border border-sky-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs sm:text-sm text-slate-200 font-medium">
+                Ready to analyze logs or investigate an outage?
+              </span>
+            </div>
+            <button
+              onClick={() => onGetStarted("dashboard")}
+              className="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs tracking-wide transition-all shadow-lg shadow-sky-600/30 flex items-center gap-2 cursor-pointer"
+            >
+              <span>Launch Observability Workspace</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Enterprise Bento Grid: Core Capabilities */}
@@ -315,7 +409,7 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
           </p>
           <div className="pt-2">
             <button
-              onClick={onGetStarted}
+              onClick={() => onGetStarted("dashboard")}
               className="px-8 py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-sm tracking-wide shadow-xl shadow-sky-500/30 transition-all hover:scale-[1.02] cursor-pointer inline-flex items-center gap-2"
             >
               <span>Get Started with CloudLog</span>
