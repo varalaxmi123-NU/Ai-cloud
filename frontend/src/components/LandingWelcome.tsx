@@ -18,7 +18,10 @@ import {
   ExternalLink,
   Zap,
   SlidersHorizontal,
-  Clock
+  Clock,
+  Upload,
+  History,
+  BrainCircuit
 } from "lucide-react";
 import { EnterpriseLogo } from "@/components/EnterpriseLogo";
 
@@ -111,7 +114,8 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
             onClick={onGetStarted}
             className="group px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-base tracking-wide shadow-2xl shadow-sky-500/30 transition-all hover:scale-[1.03] cursor-pointer flex items-center gap-3"
           >
-            <span>Launch Command Center</span>
+            <Upload className="w-5 h-5 text-white" />
+            <span>Upload Logs &amp; Analyze</span>
             <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
           </button>
 
@@ -119,9 +123,32 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
             onClick={onGetStarted}
             className="px-6 py-4 rounded-2xl bg-[#0f172a] hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white font-semibold text-sm transition-all cursor-pointer flex items-center gap-2"
           >
-            <KeyRound className="w-4 h-4 text-sky-400" />
-            <span>Demo: company@gmail.com (1234)</span>
+            <Database className="w-4 h-4 text-sky-400" />
+            <span>Try Scenario A (Postgres Outage)</span>
           </button>
+        </div>
+
+        {/* 5-Step Guided Process Workflow Banner */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs font-mono text-slate-400">
+          <span className="px-3 py-1.5 rounded-lg bg-[#0f172a] border border-slate-800 text-sky-300 font-bold">
+            1. Upload Logs
+          </span>
+          <span>&rarr;</span>
+          <span className="px-3 py-1.5 rounded-lg bg-[#0f172a] border border-slate-800 text-amber-300 font-bold">
+            2. Analyze Errors
+          </span>
+          <span>&rarr;</span>
+          <span className="px-3 py-1.5 rounded-lg bg-[#0f172a] border border-slate-800 text-purple-300 font-bold">
+            3. Investigate Cause
+          </span>
+          <span>&rarr;</span>
+          <span className="px-3 py-1.5 rounded-lg bg-[#0f172a] border border-slate-800 text-rose-300 font-bold">
+            4. Replay Failure
+          </span>
+          <span>&rarr;</span>
+          <span className="px-3 py-1.5 rounded-lg bg-[#0f172a] border border-slate-800 text-emerald-300 font-bold">
+            5. Track Incident
+          </span>
         </div>
 
         {/* Floating Live Product Telemetry Window Preview */}
@@ -224,22 +251,22 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
               </div>
             </div>
 
-            {/* Feature 2 */}
+            {/* Feature 2: AI Incident Investigator */}
             <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mb-4">
-                <Layers className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center mb-4">
+                <BrainCircuit className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">Intelligent Alert Correlation</h3>
+              <h3 className="text-base font-bold text-white mb-2">AI Incident Investigator</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Reduces alert fatigue by 91%. Clusters hundreds of repetitive cascading errors into a single coherent incident envelope with root-cause tracing.
+                Connects related cascading errors into a chronological evidence timeline. Identifies true root causes with confidence scoring and supporting log proof.
               </p>
               <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>142 Alerts &rarr; 3 Incidents</span>
-                <span className="text-indigo-400 font-semibold">91.2% Reduction</span>
+                <span>Timeline Reasoning</span>
+                <span className="text-purple-400 font-semibold">96% Confidence</span>
               </div>
             </div>
 
-            {/* Feature 3 */}
+            {/* Feature 3: Deployment Regression Detection */}
             <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-4">
                 <GitBranch className="w-5 h-5" />
@@ -254,48 +281,48 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
               </div>
             </div>
 
-            {/* Feature 4 */}
+            {/* Feature 4: Natural Language Log Search */}
             <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center mb-4">
+              <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-400 flex items-center justify-center mb-4">
                 <Search className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-white mb-2">Natural-Language Log Search</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Query logs across all 8 microservices using plain English. Translates semantic queries into structured filter syntax instantly.
+                Ask questions in plain English (&quot;What caused the most failures?&quot;). Provides semantic answers and filtered diagnostic event sets.
               </p>
               <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>Natural Language NLP</span>
-                <span className="text-purple-400 font-semibold">Sub-10ms Filter</span>
+                <span>Semantic Synthesis</span>
+                <span className="text-sky-400 font-semibold">Direct Answers</span>
               </div>
             </div>
 
-            {/* Feature 5 */}
+            {/* Feature 5: Failure Replay & Prevention Engine */}
             <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
               <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center mb-4">
-                <AlertOctagon className="w-5 h-5" />
+                <History className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">Incident Priority Scoring Matrix</h3>
+              <h3 className="text-base font-bold text-white mb-2">Failure Replay &amp; Prevention Engine</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Multi-factor mathematical priority formula scoring incidents from P1 Critical down to P4 Info based on blast radius and error growth.
+                Interactive step-by-step player reconstructing outage progression. Delivers architectural prevention playbooks (circuit breaking, pooling, rate limits).
               </p>
               <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>P1 &rarr; P4 Algorithm</span>
-                <span className="text-rose-400 font-semibold">Blast Radius</span>
+                <span>Step-by-Step Replay</span>
+                <span className="text-rose-400 font-semibold">Prevention Engine</span>
               </div>
             </div>
 
-            {/* Feature 6 */}
+            {/* Feature 6: Incident Management & Tracking */}
             <div className="p-6 rounded-2xl bg-[#0f172a] border border-slate-800 shadow-xl transition-all hover:border-slate-700">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-4">
-                <Terminal className="w-5 h-5" />
+                <AlertOctagon className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">Autonomous Self-Healing Runbooks</h3>
+              <h3 className="text-base font-bold text-white mb-2">Incident Management &amp; Tracking</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Remediate node saturations, restart degraded database connection pools, and redirect traffic through interactive terminal runbooks.
+                Track, triage, and mark production incident tickets as resolved. Includes severity scoring, affected components, and verified solutions.
               </p>
               <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>MTTR &lt; 1.5s</span>
-                <span className="text-emerald-400 font-semibold">Runbook Engine</span>
+                <span>P1 &rarr; P4 Lifecycle</span>
+                <span className="text-emerald-400 font-semibold">Resolution Tracking</span>
               </div>
             </div>
           </div>

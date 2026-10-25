@@ -6,6 +6,9 @@ import { SignInPage } from "@/components/SignInPage";
 import { Navbar } from "@/components/Navbar";
 import { WelcomeHeader } from "@/components/WelcomeHeader";
 import { LogStreamViewer } from "@/components/LogStreamViewer";
+import { AIIncidentInvestigator } from "@/components/AIIncidentInvestigator";
+import { FailureReplayEngine } from "@/components/FailureReplayEngine";
+import { IncidentManagerView } from "@/components/IncidentManagerView";
 import { AIRootCauseModal } from "@/components/AIRootCauseModal";
 import { AlertCorrelationView } from "@/components/AlertCorrelationView";
 import { DeploymentRegressionView } from "@/components/DeploymentRegressionView";
@@ -219,48 +222,46 @@ export default function CloudLogObservabilityApp() {
           noiseReductionPct={91.2}
         />
 
-        {/* Feature 1: Real-Time Log Monitoring & Statistical Anomaly Stream */}
+        {/* Tab 1: Real-Time Log Monitoring, File Uploader & Statistical Anomaly Stream */}
         {activeTab === "logs" && (
           <div className="space-y-6 animate-fadeIn">
             <LogStreamViewer
               onSelectLogError={(log) => setSelectedErrorLog(log)}
+              onOpenInvestigator={() => setActiveTab("investigator")}
             />
           </div>
         )}
 
-        {/* Feature 5: Natural Language Log Search Focus View */}
-        {activeTab === "nlp-search" && (
+        {/* Tab 2: AI Incident Investigator (Causal Reasoning & Evidence Timeline) */}
+        {activeTab === "investigator" && (
           <div className="space-y-6 animate-fadeIn">
-            <LogStreamViewer
-              initialNlpQuery="Show database errors from the last 30 minutes"
-              onSelectLogError={(log) => setSelectedErrorLog(log)}
+            <AIIncidentInvestigator
+              onOpenFailureReplay={() => setActiveTab("replay")}
             />
           </div>
         )}
 
-        {/* Feature 3: Intelligent Alert Correlation View */}
-        {activeTab === "correlation" && (
+        {/* Tab 3: Failure Replay & Prevention Engine (Step-by-Step Timeline Player) */}
+        {activeTab === "replay" && (
           <div className="space-y-6 animate-fadeIn">
-            <AlertCorrelationView
-              onInvestigateIncident={(inc) => {
-                setActiveTab("topology");
-                setSelectedServiceId(inc.rootService);
-              }}
+            <FailureReplayEngine />
+          </div>
+        )}
+
+        {/* Tab 4: Incident Management & Tracking System */}
+        {activeTab === "incidents" && (
+          <div className="space-y-6 animate-fadeIn">
+            <IncidentManagerView
+              onInvestigateIncident={() => setActiveTab("investigator")}
+              onReplayIncident={() => setActiveTab("replay")}
             />
           </div>
         )}
 
-        {/* Feature 4: Deployment Regression Detection View */}
+        {/* Tab 5: Deployment Regression Detection & Canary Rollback */}
         {activeTab === "regression" && (
           <div className="space-y-6 animate-fadeIn">
             <DeploymentRegressionView />
-          </div>
-        )}
-
-        {/* Feature 6: Incident Impact & Priority Scoring Matrix */}
-        {activeTab === "priority" && (
-          <div className="space-y-6 animate-fadeIn">
-            <IncidentPriorityMatrix />
           </div>
         )}
 

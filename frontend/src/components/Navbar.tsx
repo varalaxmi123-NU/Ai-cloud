@@ -19,7 +19,9 @@ import {
   AlertTriangle,
   Flame,
   Menu,
-  X
+  X,
+  BrainCircuit,
+  History
 } from "lucide-react";
 import { TopologyResponse } from "@/types/sre";
 
@@ -60,11 +62,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isWarning = systemStatus === "ELEVATED_CASCADE_WARNING";
 
   const NAV_ITEMS = [
-    { id: "logs", label: "Live Logs", icon: <Activity className="w-4 h-4" /> },
-    { id: "correlation", label: "Alert Correlation", icon: <Layers className="w-4 h-4" /> },
+    { id: "logs", label: "Logs & Analyzer", icon: <Activity className="w-4 h-4" /> },
+    { id: "investigator", label: "AI Investigator", icon: <BrainCircuit className="w-4 h-4" /> },
+    { id: "replay", label: "Failure Replay", icon: <History className="w-4 h-4" /> },
+    { id: "incidents", label: "Incidents", icon: <AlertOctagon className="w-4 h-4" /> },
     { id: "regression", label: "Deployments", icon: <GitBranch className="w-4 h-4" /> },
-    { id: "priority", label: "Priority Matrix", icon: <AlertOctagon className="w-4 h-4" /> },
-    { id: "topology", label: "Service Topology", icon: <Cpu className="w-4 h-4" /> },
+    { id: "topology", label: "Topology", icon: <Cpu className="w-4 h-4" /> },
   ];
 
   return (
