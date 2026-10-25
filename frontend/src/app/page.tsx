@@ -18,6 +18,7 @@ import { TelemetryDrawer } from "@/components/TelemetryDrawer";
 import { ChaosConsole } from "@/components/ChaosConsole";
 import { SelfHealingModal } from "@/components/SelfHealingModal";
 import { OverviewDashboard } from "@/components/OverviewDashboard";
+import { FailureChainDetective } from "@/components/FailureChainDetective";
 import { fetchTopology, injectChaos, healService, resetCluster } from "@/lib/api";
 import { TopologyResponse, CascadeResult, ServiceNode } from "@/types/sre";
 import { CloudLog } from "@/types/logAnalyzer";
@@ -234,6 +235,16 @@ export default function CloudLogObservabilityApp() {
               onSelectService={(id) => setSelectedServiceId(id)}
               onInjectChaos={handleInjectChaos}
               onReset={handleReset}
+            />
+          </div>
+        )}
+
+        {/* Tab 0.5: Failure Chain Detective (Evidence-Linked Root Cause Cascade) */}
+        {activeTab === "detective" && (
+          <div className="space-y-6 animate-fadeIn">
+            <FailureChainDetective
+              onOpenFailureReplay={() => setActiveTab("replay")}
+              onOpenIncidentManager={() => setActiveTab("incidents")}
             />
           </div>
         )}

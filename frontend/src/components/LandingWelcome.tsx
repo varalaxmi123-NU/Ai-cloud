@@ -45,8 +45,8 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
           <div className="flex items-center gap-4">
             {/* System Status Pill */}
             <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-[#0f172a] border border-slate-800 text-xs text-slate-300">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>All 8 Microservices Operational</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span>Sample Demo Scenario (8 Services)</span>
             </div>
 
             {/* Quick Demo Credentials Pill */}
@@ -75,7 +75,7 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
           <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
           <span className="text-slate-400 font-normal">CloudLog Platform v2.4</span>
           <span className="text-slate-600">•</span>
-          <span className="text-sky-300">Distributed Observability &amp; SRE Engine</span>
+          <span className="text-sky-300">Log File Analysis &amp; SRE Incident Investigator</span>
         </div>
 
         {/* Hero Headline */}
@@ -87,7 +87,7 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
             </span>
           </h1>
           <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
-            High-throughput telemetry ingestion, statistical outlier surge detection, and autonomous root-cause remediation for modern microservice clusters.
+            Upload log files (.log, .txt, .json, .csv) to detect critical errors, investigate cascading failure chains, and deduce evidence-backed root causes with precision.
           </p>
         </div>
 
@@ -220,7 +220,7 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
 
               <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
                 <span>Confidence Gauge</span>
-                <span className="text-purple-400 font-bold">96% High Accuracy</span>
+                <span className="text-purple-400 font-bold">Evidence-Corroborated</span>
               </div>
             </div>
 
@@ -317,8 +317,8 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
                 Connects related cascading errors into a chronological evidence timeline. Identifies true root causes with confidence scoring and supporting log proof.
               </p>
               <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>Timeline Reasoning</span>
-                <span className="text-purple-400 font-semibold">96% Confidence</span>
+                <span>Evidence Reasoning</span>
+                <span className="text-purple-400 font-semibold">Calculated Score</span>
               </div>
             </div>
 
@@ -329,11 +329,11 @@ export const LandingWelcome: React.FC<LandingWelcomeProps> = ({ onGetStarted }) 
               </div>
               <h3 className="text-base font-bold text-white mb-2">Deployment Regression Detection</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Compares error velocity before and after release deployment. Flags canary regressions with 1-click automated rollback to stable baselines.
+                Compares error velocity before and after release deployment. Detects canary regressions and outputs safe, verified rollback commands (e.g. kubectl rollout undo) for engineering review.
               </p>
               <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
                 <span>v2.4.1 vs v2.4.2</span>
-                <span className="text-amber-400 font-semibold">Instant Rollback</span>
+                <span className="text-amber-400 font-semibold">Safe Rollback Runbook</span>
               </div>
             </div>
 
